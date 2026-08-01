@@ -1,10 +1,8 @@
 import datetime
 import json
 
-
 def get_time():
     return datetime.datetime.now()
-
 
 def save_text(filename, text):
     try:
@@ -16,14 +14,9 @@ def save_text(filename, text):
     except Exception as e:
         print("保存失败:", e)
 
-
 def save_news(news):
     try:
-        with open(
-            "data/news.json",
-            "w",
-            encoding="utf-8"
-        ) as f:
+        with open("data/news.json","w",encoding="utf-8") as f:
 
             json.dump(
                 news,
@@ -33,6 +26,8 @@ def save_news(news):
             )
 
         print("新闻保存成功")
+        return True
 
     except Exception as e:
         print("新闻保存失败:", e)
+        return False
