@@ -1,8 +1,18 @@
 [
     {
-        "title": "AI新闻1"
+        "title": "AI新闻1",
+        "content": "01"
     },
     {
-        "title": "AI新闻2"
+        "title": "AI新闻2",
+        "content": "02"
+    },
+    {
+        "title": "AI发展趋势",
+        "content": "人工智能正在快速发展"
+    },
+    {
+        "title": "AI发展趋势",
+        "content": "人工智能正在快速发展"
     }
 ]
