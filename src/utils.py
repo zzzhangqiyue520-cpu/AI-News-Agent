@@ -2,7 +2,7 @@ import datetime
 import json
 
 def get_time():
-    return datetime.datetime.now()
+    return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 def save_text(filename, text):
     try:
