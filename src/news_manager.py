@@ -8,7 +8,6 @@ class NewsManager:
 
     def save_news(self,news_list):
         try:
-
             #添加时间
             for news in news_list:
 
@@ -43,8 +42,10 @@ class NewsManager:
 
         news = {
             "title":title,
-            "url":url
+            "url":url,
+            "time":str(get_time())
         }
 
         news_list.append(news)
+
         self.save_news(news_list)

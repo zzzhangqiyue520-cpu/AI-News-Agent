@@ -1,24 +1,53 @@
-import requests
+import aiohttp
+import asyncio
+import time
 
-def crawl():
+async def fetch(session,url):
+
+    timeout = aiohttp.ClientTimeout(total=5)
+
+    headers = {
+        "User-agent":"Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36"
+    }
 
     try:
-        print("开始抓取AI新闻")
 
-        url = "https://www.people.com.cn"
+        async with session.get(url,timeout=timeout,headers=headers) as resp:
 
-        resp = requests.get(url)
+            html = await resp.text()
 
-        resp.encoding = "utf-8"
+            print(url,"完成")
 
-        html = resp.text
-
-        return html
+            return html
 
     except Exception as e:
-        print("爬取失败:", e)
+
+        print(url,"失败",e)
 
         return None
 
-if __name__ == "__main__":
-    crawl()
+async def crawl():
+    urls = [
+
+        "https://news.ycombinator.com",
+    ]
+
+    async with aiohttp.ClientSession() as session:
+
+        tasks = []
+
+        for url in urls:
+
+            tasks.append(fetch(session,url))
+
+        result = await asyncio.gather(*tasks)
+
+        return result
+
+start = time.time()
+
+asyncio.run(crawl())
+
+end = time.time()
+
+print("耗时",end-start)

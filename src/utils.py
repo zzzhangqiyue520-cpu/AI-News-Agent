@@ -13,21 +13,3 @@ def save_text(filename, text):
 
     except Exception as e:
         print("保存失败:", e)
-
-def save_news(news):
-    try:
-        with open("data/news.json","w",encoding="utf-8") as f:
-
-            json.dump(
-                news,
-                f,
-                ensure_ascii=False,
-                indent=4
-            )
-
-        print("新闻保存成功")
-        return True
-
-    except Exception as e:
-        print("新闻保存失败:", e)
-        return False
