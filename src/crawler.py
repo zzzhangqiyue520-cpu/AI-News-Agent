@@ -7,7 +7,7 @@ async def fetch(session,url):
     timeout = aiohttp.ClientTimeout(total=5)
 
     headers = {
-        "User-agent":"Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36"
+        "User-Agent":"Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36"
     }
 
     try:
@@ -28,8 +28,11 @@ async def fetch(session,url):
 
 async def crawl():
     urls = [
-
         "https://news.ycombinator.com",
+
+        "https://openai.com/news/",
+
+        "https://deepmind.google/discover/blog/"
     ]
 
     async with aiohttp.ClientSession() as session:
@@ -46,7 +49,14 @@ async def crawl():
 
 start = time.time()
 
-asyncio.run(crawl())
+results = asyncio.run(crawl())
+
+
+for r in results:
+
+    if r:
+
+        print(r[:200])
 
 end = time.time()
 
