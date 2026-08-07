@@ -37,13 +37,15 @@ class NewsManager:
             print("读取失败",e)
             return []
 
-    def add_news(self,title,url):
+    def add_news(self,title,url,source,content):
         news_list = self.load_news()
 
         news = {
             "title":title,
             "url":url,
-            "time":str(get_time())
+            "source":source,
+            "time":str(get_time()),
+            "content":content
         }
 
         news_list.append(news)
