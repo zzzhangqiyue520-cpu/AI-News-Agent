@@ -27,37 +27,51 @@ async def fetch(session,url):
         return None
 
 async def crawl():
-    urls = [
-        "https://news.ycombinator.com",
 
-        "https://openai.com/news/",
+    websites = [
 
-        "https://deepmind.google/discover/blog/"
+        {
+            "source":"Anthropic",
+            "url":"https://www.anthropic.com/"
+        },
+
+        {
+            "source":"DeepMind",
+            "url":"https://deepmind.google/blog/"
+        }
+
     ]
+
 
     async with aiohttp.ClientSession() as session:
 
         tasks = []
 
-        for url in urls:
+        for site in websites:
 
-            tasks.append(fetch(session,url))
-
-        result = await asyncio.gather(*tasks)
-
-        return result
-
-start = time.time()
-
-results = asyncio.run(crawl())
+            tasks.append(
+                fetch(
+                    session,
+                    site["url"]
+                )
+            )
 
 
-for r in results:
+        html_list = await asyncio.gather(*tasks)
 
-    if r:
+        results = []
 
-        print(r[:200])
+        for site, html in zip(websites, html_list):
 
-end = time.time()
+            if html:
 
-print("耗时",end-start)
+                results.append(
+                    {
+                        "source":site["source"],
+                        "html":html
+                    }
+                )
+
+
+        return results
+    

@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 from utils import get_time
 
-def parse(html):
+def parse_hackernews(html):
     soup = BeautifulSoup(html, "html.parser")
     news = []
 
