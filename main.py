@@ -1,90 +1,123 @@
 import asyncio
+import json
 
-from src.news_manager import NewsManager
-from src.crawler import crawl
 
-from src.parser.deepmind import parse_deepmind
-from src.parser.anthropic import parse_anthropic
+from src.sources.deepmind.crawler import (
+    DeepMindCrawler
+)
 
-from src.ai.analyzer import summarize
+
+from src.sources.deepmind.detail import (
+    DeepMindDetail
+)
+
+
+from src.sources.deepmind.parser import (
+    parse_news
+)
+
 
 
 async def main():
 
-    print("AI-News-Agent启动")
 
-    # 1.创建管理器
-    manager = NewsManager(
-        "data/news.json"
-    )
+    crawler = DeepMindCrawler()
 
-    # 2.异步爬取
-    html_list = await crawl()
-
-    news_list = []
+    detail = DeepMindDetail()
 
 
-    # 3.根据来源选择解析器
-    for item in html_list:
-
-        if item["source"] == "DeepMind":
-
-            news = parse_deepmind(
-                item["html"]
-            )
-
-        elif item["source"] == "Anthropic":
-
-            news = parse_anthropic(
-                item["html"]
-            )
-
-        else:
-
-            print(
-                "未知来源:",
-                item["source"]
-            )
-
-            continue
-
-        news_list.extend(news)
 
     print(
-        "获取新闻数量:",
-        len(news_list)
+        "开始获取新闻列表..."
     )
 
-    # 4.保存新闻
-    manager.save_news(news_list)
 
-    # 5.读取新闻并调用AI分析
-    news = manager.load_news()
-
-    for item in news:
-
-        print("-------------------------")
-
-        print("标题:")
-        print(item["title"])
+    news_list = await crawler.crawl()
 
 
-        print("链接:")
-        print(item["url"])
+
+    print(
+        "发现",
+        len(news_list),
+        "条新闻"
+    )
 
 
-        print("来源:")
-        print(item["source"])
+
+    results = []
 
 
-        print("时间:")
-        print(item["time"])
 
-        result = summarize(item)
+    for news in news_list[:5]:
 
-        print("\nAI分析结果:")
-        print(result)
+
+        print(
+            "正在处理:",
+            news["title"]
+        )
+
+
+
+        try:
+
+            content = await detail.parse_content(
+                news["url"]
+            )
+
+
+        except Exception as e:
+
+
+            print(
+                "文章解析失败:",
+                e
+            )
+
+
+            content = ""
+
+
+
+        news["content"] = content
+
+
+
+        data = parse_news(
+            news
+        )
+
+
+        results.append(
+            data
+        )
+
+
+
+    with open(
+        "data/news.json",
+        "w",
+        encoding="utf-8"
+    ) as f:
+
+
+        json.dump(
+            results,
+            f,
+            ensure_ascii=False,
+            indent=4
+        )
+
+
+
+    print(
+        "完成，保存 deepmind_news.json"
+    )
+
+
 
 if __name__ == "__main__":
 
-    asyncio.run(main())
+
+    asyncio.run(
+        main()
+    )

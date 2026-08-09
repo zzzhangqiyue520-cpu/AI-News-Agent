@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 
 def parse_anthropic(html):
 
-    soup = BeautifulSoup(html, "html.parser")
+    soup = BeautifulSoup(html, "html.sources")
 
     news = []
 

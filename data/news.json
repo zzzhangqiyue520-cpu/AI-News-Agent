@@ -1,184 +1,52 @@
 [
     {
-        "title": "Core views on AI safety",
-        "url": "https://www.anthropic.com/news/core-views-on-ai-safety",
-        "source": "Anthropic",
-        "time": "",
-        "content": ""
-    },
-    {
         "title": "Gemini Robotics 2 brings whole body intelligence to robots",
         "url": "https://deepmind.google/blog/gemini-robotics-2-brings-whole-body-intelligence-to-robots/",
         "source": "DeepMind",
         "time": "July 2026",
-        "content": ""
+        "content": "From feet to fingertips — we are teaching robots intelligent whole-body control, fine dexterity, and teamwork to complete a broad range of complex tasks\n\nFor decades, we’ve dreamed of robots that can seamlessly step into our world and lend a hand. Now, that vision takes a significant stride forward.\n\nMost robots are pre-programmed or teleoperated for narrow, repetitive task sequences. They lack the ability to truly learn for themselves or adapt to unpredictable environments. Moreover, transferring learned skills from one robot body to another remains incredibly difficult. To take on the hardest problems at scale, robots of every shape and size need AI models giving them the ability to think, act, and interact intelligently to safely complete tasks.\n\nWe demonstrated how Gemini's multimodal understanding could drive real-world action with Gemini Robotics . Today, we are introducing Gemini Robotics 2 - the intelligence layer powering the next generation of truly adaptable robots. As it takes its first literal steps, this major advance unlocks intelligent whole-body control, advanced dexterity, and multi-robot collaboration.\n\nGemini Robotics 2 enables robots to reason through every movement, unlocking a broad range of tasks. For example, it can enable a humanoid to walk, crouch, stretch, and manipulate objects to clean up a cluttered room. It can even team up with other robots to finish the job faster. And this profound intelligence can also run locally on-device while seamlessly adapting to entirely new robotic bodies in just a few hours.\n\nWe are making this possible through three highly capable models:\n\nGemini Robotics 2 : Our most advanced vision-language-action model (VLA) that converts vision and language input into motor control, enabling a robot to take action. This model is capable of controlling full humanoids, from feet to fingertips, and other bi-arm robots. It also brings a new level of dexterous manipulation on both hands and grippers.\n\nGemini Robotics ER 2 : Our most capable embodied reasoning (ER) model. It is a vision language model (VLM) that acts as our agent, enabling robots to communicate with humans, understand the physical world and plan multi-step tasks lasting several minutes. We are also introducing the ability for robots to work together as a team.\n\nGemini Robotics On-Device 2 : Our most efficient vision-language-action model (VLA) optimized to run locally on robotic devices. This model can now achieve fast adaptation to completely new robot embodiments with a few hours of data.\n\nGemini Robotics ER 2, our reasoning model, is now available on Google AI Studio and in private preview on Gemini Enterprise Agent Platform . Our VLA and On-Device models are available to early-access partners . Read how to bring these models to your hardware on our Developer blog .\n\nHumanoids in motion: Managing whole-body tasks\n\nThe world is built for human movements; it requires us to reach, bend, and balance in tight, cluttered spaces. While our previous models controlled the humanoid’s upper-body to achieve table-top tasks, Gemini Robotics 2 expands physical AI into whole-body motions.\n\nFor the first time, our model can now control entire humanoid robots, translating intent into intelligent whole-body control. For example, when controlling Apptronik’s Apollo 2 humanoid robot, we can ask it to “put the watering can into the green bin in the bottom shelf. ” Apollo processes the instruction, walks to the table, and picks up the watering can, takes a few steps to the shelves, and places it precisely in its destination. While our robots have more to advance in movement speed, this is an important step towards the skills needed to complete more complex, real-world tasks that require whole-body coordination.\n\nBringing advanced dexterity to hands and grippers\n\nTo be genuinely useful in our homes and workplaces, robots need finesse. Gemini Robotics 2 unlocks a new level of physical dexterity across different end effectors, whether a robot is using hands or grippers, enabling robots to be more useful than ever before.\n\nThe model can now control the five-fingered, 22 degree-of-freedom SharpaWave hand on the Apollo 2 robot to complete delicate actions like tying knots or sealing a ziplock bag. It can also operate standard two-fingered parallel grippers on a Franka Duo platform to perform complex dexterous tasks (e.g. tight packing). We are continuing to advance the level of precision and speed to achieve human-level dexterity.\n\nUnlocking advanced tasks with agentic reasoning and multi-robot collaboration\n\nMost real-world tasks require multiple steps over an extended period of time. To manage this complexity, our embodied reasoning (ER) model, Gemini Robotics ER 2, serves as the robot’s high-level brain, processing user instructions and communicating with humans. It observes the room, reasons about the steps needed to complete the task, coordinates with the VLA to carry out the actions, and tracks progress until the task is done. This setup allows robots to execute complex multi-step tasks, self-correct if a step fails, and generalize to novel situations and goals.\n\nIn this update, we are enabling robots to more reliably execute longer task sequences, lasting several minutes and involving hundreds of decisions. Gemini Robotics ER 2 now understands when tasks begin and end, and can pinpoint the moment key events occur, marking a step change in progress understanding.\n\nFurthermore, we are introducing multi-robot collaboration. This enables different types of robots to communicate and work together to solve complex workflows a single robot could not do alone.\n\nAdapting fast on-device models for any robot\n\nMany robotic applications need to operate without network latency or internet connectivity. Gemini Robotics On-Device 2 is built specifically to handle these constraints — it is our most-efficient vision-language-action model (VLA) optimized to run locally on robotic devices.\n\nThis model is natively multi-embodiment and inherits our advanced “motion transfer” techniques from Gemini Robotics 1.5 . We can now adapt to new bi-arm robot embodiments with just a few hours of adaptation time, typically with less than 200 examples. This works even with new embodiments with drastically different shapes, sensors and degrees of freedom, as shown below with a diverse set of tasks being performed by the Dexmate, SO101, and Trossen platforms.\n\nAdvancing our commitment to safe and responsible robotics\n\nSafety is foundational to our robotics research. As robots gain more physical capabilities, we are committed to ensuring end-to-end safety and alignment. With each release, we’ve taken a multi-layered approach that combines traditional physical safety measures with robust AI safety frameworks.\n\nGemini Robotics 2 specifically advances robotics safety for navigating the uncertainty of the real world and collaborating alongside humans.\n\nWe’re introducing ASIMOV-Agentic , a new benchmark for agentic safety orchestration and uncertainty resolution. For example, it measures the embodied reasoning agent’s ability to refuse unsafe tool calls from a VLA.It also measures the agent’s ability to predict whether a task is possible and to proactively request human intervention when uncertain.\n\nAdditionally, with enhanced embodied reasoning, Gemini Robotics ER 2 is our safest robotics model to date in safety constraint following and human proximity benchmarks. It can better detect when humans are nearby, trigger safety tool calls and bring the robot to a safe stop if someone approaches too closely. This is a key requirement in collaborative safety standards. Read our Gemini Robotics 2: Safety Technical Report for more details.\n\nBuilding towards general-purpose physical AI\n\nGemini Robotics 2 marks an important milestone on the path toward solving AGI in the physical world. Unlocking the true potential of robotics requires moving past single-task automation toward general-purpose intelligence. By building this core intelligence, our goal is to enable AI in the physical world that can work alongside humans to solve complex challenges.\n\nExplore Gemini Robotics 2",
+        "summary": "",
+        "keywords": [],
+        "category": ""
     },
     {
         "title": "WeatherNext: AI model achieves breakthrough in forecasting cyclones",
         "url": "https://deepmind.google/blog/weathernext-ai-model-achieves-breakthrough-in-forecasting-cyclones/",
         "source": "DeepMind",
         "time": "August 2026",
-        "content": ""
+        "content": "WeatherNext enables accurate cyclone forecasts that can give an extra day of warning. Now we are open sourcing the model.\n\nPredicting how dangerous cyclones develop is a longstanding challenge where every hour counts. Tropical cyclones — also known as hurricanes or typhoons — are among the most destructive weather phenomena on Earth, responsible for more than 700,000 deaths and $1.4 trillion in economic losses globally over the past 50 years. For forecasters, issuing timely, accurate warnings is a constant race against time.\n\nToday, in a paper published in Nature , we show that our WeatherNext AI model achieved state-of-the-art accuracy in predicting a cyclone's track, intensity, and wind structure. On average, our model gives forecasters an extra day’s worth of predictive accuracy: our three-day forecasts are as good as what prior models were able to provide for only the next two days. This scale of improvement corresponds roughly to a decade’s worth of meteorological progress.\n\nThis collaborative work brought together AI researchers and engineers at Google DeepMind and Google Research, with expert forecasters at the National Hurricane Center (NHC), the Cooperative Institute for Research in the Atmosphere (CIRA), the UK Met Office , and weather agencies around the world.\n\nOur research has already had real-world impact. During the 2025 hurricane season, our model helped the NHC to make a historic forecast for Hurricane Melissa by predicting the storm’s rapid intensification and landfall in Jamaica. This enabled the NHC to issue an advance warning, giving teams on the ground critical time to prepare. This year, we continue to work together and are now predicting 1,000 possible scenarios for each cyclone to help support forecasters in their decision-making.\n\nWeather affects everyone. Given this broad impact, we are now open sourcing our WeatherNext 2 and WeatherNext Cyclones models used during the hurricane season. By making this technology openly available, we hope to empower the research community and amplify AI's impact in building more resilient communities – whether that be providing local forecasters with the tools they need to prepare for natural disasters , supporting the growth of renewable energy, or anticipating extreme weather.\n\nHow WeatherNext predicts weather and cyclones\n\nPredicting cyclones has typically forced a trade-off requiring two distinct modeling techniques. A cyclone's track (where it goes) is steered by massive, global atmospheric currents, which before now have been best modeled by coarser global models. However, a cyclone’s intensity (how strong it gets) is driven by highly localized, fine-scale thermodynamic physical processes around its core, which are best modeled by specialized, higher resolution, local models.\n\nOur WeatherNext model bridges this gap by improving forecasting for global weather overall as well as cyclones. It is a single AI model that predicts a tropical cyclone’s track, intensity, and wind structure with state-of-the-art accuracy. It achieves this breakthrough through a unique combination of its training, architecture and approach to low resolution inputs.\n\nThe model was co-trained on two distinct data modalities: global weather dynamics and expert-curated historical cyclone observations. By training end-to-end on nearly 20 terabytes of global atmospheric data and the historical IBTrACS database spanning nearly 5,000 historical storms, the model learns complex atmospheric patterns and how to model extreme weather.\n\nOur model uses Functional Generative Networks (FGNs) to efficiently produce ensembles of different predictions, which captures the inherent uncertainty of the weather. We can now generate a single 15-day forecast in less than a minute on a TPU, empowering forecasters to quickly evaluate the probability distribution of potentially devastating tail-risks. Last year, our system produced 50 predictions at a time, matching global physics models. This year we scaled our ensemble size to 1,000 members, capturing rare but consequential scenarios like rapid intensification events, as occurred during Hurricane Melissa in 2025.\n\nUp until now, operating at very high spatial resolution has been considered the main driver for making accurate intensity forecasts. However, WeatherNext Cyclones only needs data with a resolution of 28x28km, 100x coarser than traditional models. A smaller version of the model, WeatherNext 2-mini, which operates at a coarser 111x111km resolution, also shows great performance. This has surprised scientists, and it remains an open research question to fully understand how our models produce such accurate predictions at this resolution. We hope that, together with the research community, we can find out.\n\nOpening up WeatherNext to the research community\n\nAlongside our Nature paper, we are open sourcing the code and model weights, making them freely available for anyone to build on. This includes academic research, operational forecasting, or developing more specialized, localized models. We hope to accelerate progress across the global weather community and empower meteorological agencies, researchers, and nonprofits to better predict weather events of all kinds and make key decisions to protect lives and infrastructure.\n\nWe are also releasing two sets of similar models: WeatherNext Cyclones, which ran during the hurricane season (results can be seen in the paper); and WeatherNext 2, a later update that we operationalized in October. Additionally, we are releasing WeatherNext 2-mini, a compact version of the model that can run on a single TPU in a free public Colab notebook .\n\nYou can explore our latest cyclone forecasts on Weather Lab , which we recently refreshed with a new interface and expanded to include global weather forecasts alongside cyclone tracks. Weather Lab now lets you visualize WeatherNext predictions for temperature, precipitation, wind speed, and more, all in a single view. Both Weather Lab and WeatherNext models are a part of Google Earth AI .\n\nPushing the frontiers of AI for weather forecasting\n\nWe have achieved a historic breakthrough by gaining more than a full day of lead time for predicting cyclones — delivering an advance equivalent to a decade of meteorological progress. As we prepare for future storm seasons, we invite researchers, meteorological agencies, and experts to partner with us, build on our open source models, and explore our forecasts on Weather Lab. By combining advanced machine learning with the indispensable real-world expertise of human forecasters, we aim to create a collaborative weather forecasting ecosystem that can save lives and help communities adapt to a changing climate.\n\nNote: For official weather forecasts and warnings, refer to your local meteorological agency or national weather service.\n\nAcknowledgements\n\nThis research was co-developed by Google DeepMind and Google Research teams.\n\nWe’d like to thank our collaborators NOAA/NWS/NCEP National Hurricane Center, Cooperative Institute for Research in the Atmosphere (CIRA) and the UK Met Office for their partnership and contributions to the paper.\n\nThis work reflects the contributions of the paper’s co-authors: Ferran Alet, Tom Andersson, Ilan Price, Stratis Markou, Andrew El-Kadi, Dominic Masters, Amy Li, Samier Merchant, Natalie Williams,Gregory Thornton, Ken MacKay, Olivia Graham, Akib Uddin, Ben Gaiarin, Devaja Shah, Elinor Kruse, Wallace Hogsett, David Zelinsky, John Cangialosi, Jonathan Martinez, James Franklin, Mark DeMaria, Kate Musgrave, Caroline L. Bain, Helen Titley, Jacklynn Stott, Remi Lam, Aaron Bell, Paul Komarek, Matthew Willson, Alvaro Sanchez-Gonzalez, and Peter Battaglia.",
+        "summary": "",
+        "keywords": [],
+        "category": ""
     },
     {
         "title": "Gemini Robotics ER 2: powering robotics with video understanding, task orchestration, and multi-robot collaboration",
         "url": "https://blog.google/innovation-and-ai/models-and-research/google-deepmind/gemini-robotics-er-2/?utm_source=deepmind.google&utm_medium=referral&utm_campaign=gdm&utm_content=",
         "source": "DeepMind",
         "time": "July 2026",
-        "content": ""
+        "content": "For robots to assist humans in everyday environments, accurate spatial reasoning is not enough. Robots must also think fast, timing their decisions and reasoning with the real-time speed of the physical world.\n\nThat’s why today we’re launching Gemini Robotics ER 2 , our most capable “embodied reasoning” model for robotics. Think of Gemini Robotics ER 2 as a high-level brain for robots. It allows robots to chat with humans, understand the physical world, and plan multi-step tasks. It then hands off motor execution to any given lower level vision-language-action (VLA) model. Gemini Robotics ER 2 can also natively call tools like Google Search to find information, or any other user-defined function. The design of Gemini Robotics ER 2 allows the robot to “think” about what comes next while simultaneously performing its actions.\n\nGemini Robotics ER 2 represents a significant upgrade over Gemini Robotics ER 1.6 . By watching continuous video feeds, robots can now track their own progress, adapt if something goes wrong, and know exactly when to move on to the next step. We are also introducing multi-robot collaboration, enabling robots to work together in shared spaces and complete complex workflows a single robot could not do alone.\n\nGemini Robotics ER 2 is now publicly available to developers via the Gemini API , Google AI Studio , and in private preview on Gemini Enterprise Agent Platform . To help you get started, we’re sharing examples of how to configure the model and prompt it to power more useful physical AI tasks.\n\nAdvancing physical agentic capabilities\n\nMost tasks in the physical world are complex and require multiple steps to complete. Gemini Robotics ER 2 is a physical agent, orchestrating steps for the robot and enabling it to self-correct, and generalize to more novel situations. To build an agentic setup, developers can declare low-level control interfaces — like Vision-Language-Action (VLA) models or navigation APIs — as tools, and stream multimodal video, audio, or text directly into the model.\n\nGemini Robotics ER 2 improves this tool orchestration workflow. We can evaluate its performance with robots in simulation, using real-world robot control, and even pair it with a human controlling the robot remotely.\n\nGemini Robotics ER 2 consistently outperforms ER 1.6 for tool orchestration across three control modes: real VLA, sim VLA, and human tele-op.\n\nIn robotics, high-level reasoning depends on execution speed. Gemini Robotics ER 2 integrates into the Gemini Live API , using a bidirectional streaming endpoint optimized for latency-sensitive tasks. The result is fluid orchestration: Gemini Robotics ER 2 commands action models and robotics APIs to complete multi-step tasks without the jarring “stop-and-think” pauses. To illustrate this, we’ve built a demo with Spot from our partners at Boston Dynamics . We use Gemini Robotics ER 2 to orchestrate Spot APIs , such as navigation and manipulator movement, creating an interactive robot that fetches objects for you.\n\nGemini Robotics ER 2 powered Boston Dynamic Spot fetches a popcorn snack up on a natural language command.\n\nThe code is available on Github with other examples.\n\nUnlocking temporal intelligence for robust task completion\n\nOne of robotics’ hardest challenges is knowing when a task is done. Gemini Robotics ER 2 brings a step-change in video understanding and progress tracking to verify that complex tasks — such as tightening a light bulb or tying a trash bag — are complete to specification before switching to the next task.\n\nIn this update, we’ve made progress on two foundational capabilities for task progress understanding: progress classification and moment finding.\n\nProgress classification refers to a robot’s ability to track progress towards task completion. In our evaluations, we assign each frame in a video feed into five levels of progress (0-20%, 20-40%, 40-60%, 60-80%, 80-100%). By quantifying task progress, Gemini Robotics ER 2 provides robots with real-time situational awareness, and allows them to adjust actions on the fly or retry failed steps without restarting an entire workflow.\n\nGemini Robotics ER 2 achieves 57.4% accuracy on progress classification tasks, outperforming previous generation models and competing frontier models.\n\nMoment-finding measures a model's ability to identify the exact video frame where a critical event takes place (i.e. when to stop pouring coffee into a cup). Gemini Robotics ER 2 achieves significant gains in performance on moment finding, enabling robots to precisely switch between tasks, verify success and suggest corrections.\n\nFor moment-finding tasks, Gemini Robotics ER 2 achieves 91.3% accuracy and a 0.96s mean absolute distance. It competes closely with much larger model categories, but delivers this precision at a fraction of the compute cost and 4x the execution speed—the sub-second latency actually required to safely operate physical robotics in the real world.\n\nNo single robot fits every task — a wheeled rover excels indoors, while a humanoid robot may excel at uneven terrain. Gemini Robotics 2 enables multi-robot collaboration, allowing diverse machines to communicate via a shared semantic understanding to handoff and complete complex tasks. See how Gemini Robotics ER 2 enables Apptronik ’s Apollo 2 and Franka F3 Duo to collaborate here .\n\nImproving general spatial intelligence\n\nGemini Robotics ER 2 advances our core spatial reasoning capability, as measured by three benchmarks:\n\nSuccess/failure detection: Now operates on raw video feeds rather than static snapshots to catch mid-execution failures like spills, slips, or misalignments.\n\nGeneral instrument reading: Extends beyond circular dials and sight glasses to include digital displays, linear scales, rulers, and liquid thermometers. We tested it across 10 different types of instruments.\n\nEnhanced spatial VQA: Improves Visual Question Answering throughGemini’s advancements in multi-modal understanding.\n\nGemini Robotics ER 2 consistently achieves the highest accuracy across all core capabilities, with highlights including success detection (image/video), Question Answering (ERQA), and generalized instrument reading.\n\nAdvancing safety for embodied intelligence\n\nGemini Robotics ER 2 is our safest model, achieving significant gains on Safety Instruction Following and Human Proximity benchmarks, which evaluate how a model adheres to physical constraints during reasoning tasks and spatial awareness for detecting humans. We found that Gemini Robotics ER 2 successfully halts a humanoid robot when a person is nearby and autonomously resumes work only once the area is clear. To advance safety for physical agents, we’re introducing a benchmark that evaluates a foundation model's ability to act as a safe VLA orchestrator by testing its capacity to enforce safety constraints, monitor the environment, assess physical feasibility, and seek human clarification. For details, see our safety technical report .\n\nGemini Robotics ER 2 outperforms ER 1.6 and other frontier models on Safety Instruction Following and Human Proximity benchmarks.\n\nLooking ahead, our plans are to push these models towards even more complex tasks to accelerate the development of helpful robots and support the robotics community.",
+        "summary": "",
+        "keywords": [],
+        "category": ""
     },
     {
         "title": "We’re launching Lyria 3.5 in Google Flow Music, with advances across musicality, lyrics, vocals, and creative control",
         "url": "https://blog.google/innovation-and-ai/models-and-research/google-labs/lyria-3-5/?utm_source=deepmind.google&utm_medium=referral&utm_campaign=gdm&utm_content=",
         "source": "DeepMind",
         "time": "July 2026",
-        "content": ""
-    },
-    {
-        "title": "Accelerating the frontiers of scientific discovery: Google’s $40M commitment to the Genesis Mission",
-        "url": "https://cloud.google.com/blog/topics/public-sector/accelerating-frontiers-of-scientific-discovery-40-million-dollar-commitment-genesis-mission",
-        "source": "DeepMind",
-        "time": "July 2026",
-        "content": ""
+        "content": "Our newest music generation model, Lyria 3.5, delivers significant advancements across musicality, lyrics, and vocal quality, empowering you to craft richer tracks. We’re rolling it out today in Google Flow Music , where we want to help you create songs you love, with creative control.\n\nHere's what’s new:\n\nImproved musicality: Create richer, more complex melodic structures that sound more natural.\n\nEnhanced lyrics: Generate higher quality lyrics with improved prompt adherence and structural awareness.\n\nImproved vocals: Bring more expression and emotion to your songs with more realistic and emotionally nuanced vocals, plus improved pronunciation.\n\nCreative control: More easily control the tempo and duration of your outputs.\n\nTry it today in Flow Music .",
+        "summary": "",
+        "keywords": [],
+        "category": ""
     },
     {
         "title": "Introducing Gemini 3.5 Flash Cyber",
         "url": "https://deepmind.google/blog/introducing-gemini-3-5-flash-cyber/",
         "source": "DeepMind",
         "time": "July 2026",
-        "content": ""
-    },
-    {
-        "title": "Introducing Gemini 3.6 Flash, 3.5 Flash-Lite, and 3.5 Flash Cyber",
-        "url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-6-flash-3-5-flash-lite-3-5-flash-cyber/?utm_source=deepmind.google&utm_medium=referral&utm_campaign=gdm&utm_content=",
-        "source": "DeepMind",
-        "time": "July 2026",
-        "content": ""
-    },
-    {
-        "title": "Our approach to bioresilience",
-        "url": "https://deepmind.google/blog/our-approach-to-bioresilience/",
-        "source": "DeepMind",
-        "time": "July 2026",
-        "content": ""
-    },
-    {
-        "title": "Empowering India’s next generation of innovators with ATL Saathi",
-        "url": "https://deepmind.google/blog/empowering-indias-next-generation-of-innovators-with-atl-saathi/",
-        "source": "DeepMind",
-        "time": "July 2026",
-        "content": ""
-    },
-    {
-        "title": "Start building with Nano Banana 2 Lite and Gemini Omni Flash",
-        "url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-omni-flash-nano-banana-2-lite/",
-        "source": "DeepMind",
-        "time": "June 2026",
-        "content": ""
-    },
-    {
-        "title": "Introducing computer use in Gemini 3.5 Flash",
-        "url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-computer-use-gemini-3-5-flash/?utm_source=deepmind.google&utm_medium=referral&utm_campaign=gdm&utm_content=",
-        "source": "DeepMind",
-        "time": "June 2026",
-        "content": ""
-    },
-    {
-        "title": "Google DeepMind and A24 announce first-of-its-kind research partnership",
-        "url": "https://blog.google/innovation-and-ai/models-and-research/google-deepmind/deepmind-a24-research-partnership/?utm_source=deepmind.google&utm_medium=referral&utm_campaign=gdm&utm_content=",
-        "source": "DeepMind",
-        "time": "June 2026",
-        "content": ""
-    },
-    {
-        "title": "Securing the future of AI agents",
-        "url": "https://deepmind.google/blog/securing-the-future-of-ai-agents/",
-        "source": "DeepMind",
-        "time": "June 2026",
-        "content": ""
-    },
-    {
-        "title": "Unlocking UK house-building with AI-accelerated planning",
-        "url": "https://deepmind.google/blog/unlocking-uk-house-building-with-ai-accelerated-planning/",
-        "source": "DeepMind",
-        "time": "June 2026",
-        "content": ""
-    },
-    {
-        "title": "Investing in multi-agent AI safety research",
-        "url": "https://deepmind.google/blog/investing-in-multi-agent-ai-safety-research/",
-        "source": "DeepMind",
-        "time": "June 2026",
-        "content": ""
-    },
-    {
-        "title": "DiffusionGemma: 4x faster text generation",
-        "url": "https://blog.google/innovation-and-ai/technology/developers-tools/diffusion-gemma-faster-text-generation/?utm_source=deepmind.google&utm_medium=referral&utm_campaign=gdm&utm_content=",
-        "source": "DeepMind",
-        "time": "June 2026",
-        "content": ""
-    },
-    {
-        "title": "Fluid, natural voice translation with Gemini 3.5 Live Translate",
-        "url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-live-3-5-translate/?utm_source=deepmind.google&utm_medium=referral&utm_campaign=gdm&utm_content=",
-        "source": "DeepMind",
-        "time": "June 2026",
-        "content": ""
-    },
-    {
-        "title": "Measuring the impact of learning with AI in Sierra Leone and beyond",
-        "url": "https://deepmind.google/blog/measuring-the-impact-of-learning-with-ai-in-sierra-leone-and-beyond/",
-        "source": "DeepMind",
-        "time": "June 2026",
-        "content": ""
-    },
-    {
-        "title": "Powering the future of robotics in Europe",
-        "url": "https://blog.google/topics/google-europe/powering-the-future-of-robotics-in-europe/?utm_source=deepmind.google&utm_medium=referral&utm_campaign=gdm&utm_content=",
-        "source": "DeepMind",
-        "time": "June 2026",
-        "content": ""
-    },
-    {
-        "title": "Introducing Gemma 4 12B: a unified, encoder-free multimodal model",
-        "url": "https://blog.google/innovation-and-ai/technology/developers-tools/introducing-gemma-4-12b/?utm_source=deepmind.google&utm_medium=referral&utm_campaign=gdm&utm_content=",
-        "source": "DeepMind",
-        "time": "June 2026",
-        "content": ""
-    },
-    {
-        "title": "Strengthening Singapore’s AI Future: A New National Partnership",
-        "url": "https://deepmind.google/blog/strengthening-singapores-ai-future-a-new-national-partnership/",
-        "source": "DeepMind",
-        "time": "May 2026",
-        "content": ""
-    },
-    {
-        "title": "Gemini 3.5: frontier intelligence with action",
-        "url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-5/",
-        "source": "DeepMind",
-        "time": "May 2026",
-        "content": ""
-    },
-    {
-        "title": "Introducing Gemini Omni",
-        "url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-omni/",
-        "source": "DeepMind",
-        "time": "May 2026",
-        "content": ""
-    },
-    {
-        "title": "Gemini for Science: AI experiments and tools for a new era of discovery",
-        "url": "https://blog.google/innovation-and-ai/technology/research/gemini-for-science-io-2026/",
-        "source": "DeepMind",
-        "time": "May 2026",
-        "content": ""
-    },
-    {
-        "title": "Co-Scientist: A multi-agent AI partner to accelerate research",
-        "url": "https://deepmind.google/blog/co-scientist-a-multi-agent-ai-partner-to-accelerate-research/",
-        "source": "DeepMind",
-        "time": "May 2026",
-        "content": ""
+        "content": "Google has invested in cybersecurity for years, pioneering automated vulnerability discovery to secure the world’s codebases. Tools like CodeMender , our code security agent, can automatically find and fix critical software vulnerabilities. But as AI agents become more capable at finding vulnerabilities faster than defenders can fix them, addressing this global threat requires a highly capable, affordable, and scalable approach.\n\nToday, we’re expanding our longtime efforts to better prepare defenders by introducing Gemini 3.5 Flash Cyber, our lightweight cybersecurity model built on top of 3.5 Flash and fine-tuned to find, validate, and patch vulnerabilities quickly and efficiently, making it more effective at these tasks than Gemini’s mainline Flash models.\n\nFlash’s performance and efficiency makes it an ideal foundation for our cybersecurity model efforts. By building on top of Flash, 3.5 Flash Cyber offers a cost-efficient and highly capable alternative to large, costly cybersecurity models.\n\nGiven the dual-use nature of this technology, we have taken an intentional approach to how we deploy 3.5 Flash Cyber. As part of a limited-access pilot program, 3.5 Flash Cyber will be exclusively available to governments and trusted partners via CodeMender soon, expanding over time. This will give frontline defenders a head start in finding and fixing critical vulnerabilities before they can be exploited, while mitigating against broader misuse.\n\nSeparately, we're also bringing CodeMender's foundational capabilities directly to customers with generally available Gemini models through the Gemini Enterprise Agent Platform .\n\nThe search space problem: The advantage of lightweight models in code security\n\nFinding deep-seated flaws requires exploring an immense execution search space. Relying on a single, expensive call to a massive language model can create a bottleneck. 3.5 Flash Cyber is particularly suitable for finding vulnerabilities where the agent has to scan a large codebase and analyze a large number of codepaths.\n\nCodeMender invokes 3.5 Flash Cyber multiple times, so agents can analyze vastly more code paths to discover and validate vulnerabilities. The sub-agents then produce a single, high-quality report.\n\nThanks to its speed and affordability, 3.5 Flash Cyber can be easily integrated into frequent scans, time-sensitive launch processes or commit scanning pipelines at scale.\n\n3.5 Flash Cyber benchmark results: an efficient alternative to larger cybersecurity models\n\nWe tested 3.5 Flash Cyber on a variety of benchmarks. In particular, we tested 3.5 Flash Cyber on the CyberGym benchmark, which evaluates AI agents against hundreds of real-world software vulnerabilities. Leveraging the low cost of 3.5 Flash Cyber by configuring CodeMender to call 3.5 Flash Cyber up to five times for a single, final report, the overall agent achieved competitive performance against significantly larger models on CyberGym*.\n\n*Competitor results are sourced from provider self-reported scores\n\nWe also stress-tested the model’s capabilities beyond CyberGym without safety guardrails. Google’s Big Sleep team independently built an evaluation focused on finding critical and hard to find vulnerabilities in some of the world’s most complex codebases like Chrome and Safari. Here, 3.5 Flash Cyber significantly surpassed mainline 3.5 Flash and 3.6 Flash.\n\n3.5 Flash Cyber was also evaluated on Google Chrome’s production commit scanning pipeline. The vulnerabilities were not publicly disclosed, which ensured this benchmark remained free of contamination for Gemini and competitor models.\n\nThe results showed a significant uplift from 3.5 Flash Cyber compared to 3.5 Flash. Note: More recent competitor model versions after Opus 4.6 refuse to fulfill the tasks due to built-in safety guardrails, and therefore are not shown.\n\nMoreover, 3.5 Flash Cyber consistently discovered more unique vulnerabilities compared with mainline 3.5 Flash and Claude Opus 4.6. When tested on the highly complex V8 JavaScript Engine across a fixed number of invocations, 3.5 Flash Cyber found 55 unique confirmed issues, compared to 47 found by mainline 3.5 Flash and 36 found by Opus 4.6, including 10 issues that the other two models tested did not catch.\n\nBasic cybersecurity models can get stuck in a loop, finding the same issue repeatedly while missing critical vulnerabilities. A strong model casts a wider net, finding a higher number of unique issues.\n\nAs we scale the number of invocations, we find that 3.5 Flash Cyber continues to discover new code paths and vulnerabilities.\n\nReal-world application and scaling defenses at Google\n\nBenchmarks are only part of the story. 3.5 Flash Cyber in CodeMender is already finding and fixing vulnerabilities in Google’s internal codebases including Chrome, Android, Cloud, Ads, and YouTube.\n\nThe speed of discovery made possible by a lightweight model has delivered measurable impact.\n\nFor example, Google’s Cloud Vulnerability Research team used 3.5 Flash Cyber to proactively secure our systems in record time. In just 2 hours, the model uncovered remote code execution vulnerabilities in public APIs and found a memory-corruption vulnerability in a sensitive production service. It then generated a 100% reliable remote-code execution exploit that bypassed standard mitigation techniques like Address Space Layout Randomization (ASLR) and Write XOR Execute (W^X) .\n\nEarly feedback from Wiz and Cloud CISO Security Engineering testers confirms the significant capability improvement of 3.5 Flash Cyber over the mainline 3.5 Flash model.\n\nEmpowering defenders at scale\n\nGoogle’s leadership in software security gives us a unique advantage. For example, OSV.dev , a vulnerability database run by Google spanning over 700,000 open-source vulnerabilities, and more than 10 years of OSS-Fuzz results, help us identify the most high quality vulnerabilities.\n\nThis allows us to move beyond synthetic cybersecurity examples and teach our models how real security professionals work. Our models learn to operate industry-standard tools, read through millions of lines of code in large-scale projects like Chromium, and independently tackle complex security tasks that require hours of continuous, deep analysis.\n\nBy powering CodeMender with 3.5 Flash Cyber, we’re providing a highly capable, scalable, and affordable architecture designed to help more defenders secure software.",
+        "summary": "",
+        "keywords": [],
+        "category": ""
     }
 ]

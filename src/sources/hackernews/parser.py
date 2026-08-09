@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 from utils import get_time
 
 def parse_hackernews(html):
-    soup = BeautifulSoup(html, "html.parser")
+    soup = BeautifulSoup(html, "html.sources")
     news = []
 
     items = soup.find_all("tr",attrs={"class":"athing submission"})
