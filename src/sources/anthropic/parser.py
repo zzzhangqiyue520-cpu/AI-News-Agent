@@ -1,36 +1,131 @@
+from lxml import etree
 from bs4 import BeautifulSoup
 
-def parse_anthropic(html):
 
-    soup = BeautifulSoup(html, "html.sources")
 
-    news = []
+def parse_rss(xml_text):
 
-    articles = soup.find_all("div",attrs={"class": "article-list-item"})
 
-    for article in articles:
+    root = etree.fromstring(
+        xml_text.encode("utf-8")
+    )
 
-        title_tag = article.find("h3")
 
-        link_tag = article.find("a",href=True)
+    news_list = []
 
-        if not title_tag or not link_tag:
-            continue
 
-        url = link_tag["href"]
+    items = root.xpath(
+        "//item"
+    )
 
-        # 过滤非新闻
-        if "/news/" not in url:
-            continue
 
-        news.append(
-            {
-                "title": title_tag.text.strip(),
-                "url": url,
-                "source": "Anthropic",
-                "time": "",
-                "content": ""
-            }
+    for item in items:
+
+
+        title = item.xpath(
+            "./title/text()"
+        )
+
+
+        url = item.xpath(
+            "./link/text()"
+        )
+
+
+        time = item.xpath(
+            "./pubDate/text()"
+        )
+
+
+        # 关键修改
+        description = item.xpath(
+            "./description/text()"
+        )
+
+
+        content = ""
+
+
+
+        if description:
+
+
+            html = description[0]
+
+
+            soup = BeautifulSoup(
+                html,
+                "html.parser"
             )
 
-    return news
+
+
+            paragraphs = []
+
+
+
+            for p in soup.find_all(
+                [
+                    "p",
+                    "h2",
+                    "h3"
+                ]
+            ):
+
+
+                text = p.get_text(
+                    " ",
+                    strip=True
+                )
+
+
+                if text:
+
+                    paragraphs.append(
+                        text
+                    )
+
+
+
+            content = "\n\n".join(
+                paragraphs
+            )
+
+
+
+        news = {
+
+
+            "title":
+            title[0].strip()
+            if title else "",
+
+
+            "url":
+            url[0].strip()
+            if url else "",
+
+
+            "source":
+            "Anthropic",
+
+
+            "time":
+            time[0].strip()
+            if time else "",
+
+
+            "content":
+            content
+
+        }
+
+
+
+        news_list.append(
+            news
+        )
+
+
+
+    return news_list
