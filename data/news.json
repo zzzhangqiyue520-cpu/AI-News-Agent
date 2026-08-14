@@ -13,7 +13,8 @@
                 "多机器人协作"
             ],
             "category": "机器人"
-        }
+        },
+        "id": "294161fcfd13af805c2ecc1d2543ebd0"
     },
     {
         "title": "Putting sign language AI into users’ hands",
@@ -29,7 +30,8 @@
                 "无障碍"
             ],
             "category": "AI技术"
-        }
+        },
+        "id": "618d4dfa5f6ed997408ccf3199026d41"
     },
     {
         "title": "WeatherNext: AI model achieves breakthrough in forecasting cyclones",
@@ -45,7 +47,8 @@
                 "开源"
             ],
             "category": "科研"
-        }
+        },
+        "id": "ea121f25d18711cebc04f6c1fe7a5f34"
     },
     {
         "title": "Gemini Robotics ER 2: powering robotics with video understanding, task orchestration, and multi-robot collaboration",
@@ -61,7 +64,8 @@
                 "多机器人协作"
             ],
             "category": "机器人"
-        }
+        },
+        "id": "43c2071d6b0bce26d4d3e125d10dec91"
     },
     {
         "title": "We’re launching Lyria 3.5 in Google Flow Music, with advances across musicality, lyrics, vocals, and creative control",
@@ -77,7 +81,8 @@
                 "Flow Music"
             ],
             "category": "大模型"
-        }
+        },
+        "id": "f9a908f35200c090401bee7099c826d3"
     },
     {
         "title": "Introducing Gemini 3.5 Flash Cyber",
@@ -93,7 +98,8 @@
                 "漏洞修复"
             ],
             "category": "大模型"
-        }
+        },
+        "id": "d6d19d126db7227d509f057147084dd8"
     },
     {
         "title": "Introducing Gemini 3.6 Flash, 3.5 Flash-Lite, and 3.5 Flash Cyber",
@@ -109,7 +115,8 @@
                 "AI代理"
             ],
             "category": "大模型"
-        }
+        },
+        "id": "92f4e8b9cfb7bc1ed389e1bb2812e84e"
     },
     {
         "title": "Our approach to bioresilience",
@@ -125,7 +132,8 @@
                 "AlphaFold"
             ],
             "category": "企业动态"
-        }
+        },
+        "id": "39191aed0f2bd8fd03be5d18c5595d8e"
     },
     {
         "title": "Empowering India’s next generation of innovators with ATL Saathi",
@@ -141,7 +149,8 @@
                 "印度教育"
             ],
             "category": "企业动态"
-        }
+        },
+        "id": "228200827ba929ba9a56c1a926b47cbc"
     },
     {
         "title": "Introducing computer use in Gemini 3.5 Flash",
@@ -157,7 +166,8 @@
                 "智能代理"
             ],
             "category": "大模型"
-        }
+        },
+        "id": "60fc39a83757a795f9039e9a8ef1ec83"
     },
     {
         "title": "Google DeepMind and A24 announce first-of-its-kind research partnership",
@@ -173,7 +183,8 @@
                 "娱乐"
             ],
             "category": "企业动态"
-        }
+        },
+        "id": "db12b37d9c3d38f3c75575b10054455d"
     },
     {
         "title": "Securing the future of AI agents",
@@ -189,7 +200,8 @@
                 "AI代理"
             ],
             "category": "企业动态"
-        }
+        },
+        "id": "6c3ecf06de23558949b948ec6e4a8589"
     },
     {
         "title": "Unlocking UK house-building with AI-accelerated planning",
@@ -205,7 +217,8 @@
                 "Gemini"
             ],
             "category": "企业动态"
-        }
+        },
+        "id": "ec6de238074c30b25ffc9cd711178d4b"
     },
     {
         "title": "Investing in multi-agent AI safety research",
@@ -221,7 +234,8 @@
                 "AI生态系统"
             ],
             "category": "科研"
-        }
+        },
+        "id": "d4285fc1570da44708dd0b4961d09954"
     },
     {
         "title": "DiffusionGemma: 4x faster text generation",
@@ -237,7 +251,8 @@
                 "加速推理"
             ],
             "category": "大模型"
-        }
+        },
+        "id": "06c0596e083a8c59c7b503fceea94c4d"
     },
     {
         "title": "Fluid, natural voice translation with Gemini 3.5 Live Translate",
@@ -253,7 +268,8 @@
                 "SynthID"
             ],
             "category": "大模型"
-        }
+        },
+        "id": "db019b6ad97686ea5c703b2efbc51f2c"
     },
     {
         "title": "Measuring the impact of learning with AI in Sierra Leone and beyond",
@@ -269,7 +285,8 @@
                 "引导式学习"
             ],
             "category": "科研"
-        }
+        },
+        "id": "56ac2785e7ef66b33857c5b6bd2d0fad"
     },
     {
         "title": "Powering the future of robotics in Europe",
@@ -285,7 +302,8 @@
                 "谷歌DeepMind"
             ],
             "category": "企业动态"
-        }
+        },
+        "id": "37988f83b6047dd33c2769f3a5aa52ae"
     },
     {
         "title": "Introducing Gemma 4 12B: a unified, encoder-free multimodal model",
@@ -301,7 +319,8 @@
                 "本地部署"
             ],
             "category": "大模型"
-        }
+        },
+        "id": "0a9a769f18d097421898f8e7fca88f6d"
     },
     {
         "title": "Strengthening Singapore’s AI Future: A New National Partnership",
@@ -317,7 +336,8 @@
                 "医疗教育"
             ],
             "category": "企业动态"
-        }
+        },
+        "id": "182491f5bb0fb50c66aedffc7fa5d526"
     },
     {
         "title": "Improving Fable 5's biology safeguards",
@@ -333,7 +353,8 @@
                 "Fable 5"
             ],
             "category": "大模型"
-        }
+        },
+        "id": "972ed13fbb3ef62457bf25aef1d3438b"
     },
     {
         "title": "Mariano-Florentino (Tino) Cuéllar to join Anthropic as Chief Global Affairs Officer",
@@ -349,7 +370,8 @@
                 "AI治理"
             ],
             "category": "企业动态"
-        }
+        },
+        "id": "4d68762480132be2ee7481662238bbac"
     },
     {
         "title": "Investigating three real-world incidents in our cybersecurity evaluations",
@@ -365,7 +387,8 @@
                 "互联网访问"
             ],
             "category": "大模型"
-        }
+        },
+        "id": "5f8dc2b2c70ad5161bc4ad472f8857bb"
     },
     {
         "title": "Our position on open-weights models",
@@ -381,7 +404,8 @@
                 "出口管制"
             ],
             "category": "开源"
-        }
+        },
+        "id": "2dfce8db0dbc7a275af40be708194a43"
     },
     {
         "title": "Cognizant and Anthropic expand their partnership to bring Claude to enterprise clients",
@@ -397,7 +421,8 @@
                 "企业合作"
             ],
             "category": "企业动态"
-        }
+        },
+        "id": "2b0c9d2969b353b5d285f8fada788e95"
     },
     {
         "title": "Introducing Claude Opus 5",
@@ -413,7 +438,8 @@
                 "成本效率"
             ],
             "category": "大模型"
-        }
+        },
+        "id": "1445d8a42c014bb8e5da7a5cd3add94b"
     },
     {
         "title": "A research agenda for the Economic Futures Research Fund",
@@ -429,7 +455,8 @@
                 "劳动力转型"
             ],
             "category": "企业动态"
-        }
+        },
+        "id": "fc1330446f855e1975289b5acb2811fc"
     },
     {
         "title": "Ask Claude about the Anthropic Economic Index",
@@ -445,7 +472,8 @@
                 "AI与工作"
             ],
             "category": "企业动态"
-        }
+        },
+        "id": "fa2922eb6e683d366e93b9ee04256f8a"
     },
     {
         "title": "Anthropic is donating another $20 million to Public First Action",
@@ -461,7 +489,8 @@
                 "捐赠"
             ],
             "category": "企业动态"
-        }
+        },
+        "id": "bfe118bdf449fb8789d5b6688b5811f4"
     },
     {
         "title": "Apply for Anthropic’s AI for Science rare disease research grants",
@@ -477,6 +506,7 @@
                 "资助计划"
             ],
             "category": "企业动态"
-        }
+        },
+        "id": "97f2b54e7d94389d7351b398552152da"
     }
 ]

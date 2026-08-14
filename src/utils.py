@@ -1,5 +1,5 @@
 import datetime
-import json
+import hashlib
 
 def get_time():
     return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -13,3 +13,8 @@ def save_text(filename, text):
 
     except Exception as e:
         print("保存失败:", e)
+
+def generate_id(url: str) -> str:
+    return hashlib.md5(
+        url.strip().encode("utf-8")
+    ).hexdigest()
