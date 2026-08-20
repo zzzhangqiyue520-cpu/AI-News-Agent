@@ -12,7 +12,7 @@ from src.sources.anthropic.source import (
 
 from src.utils import generate_id
 
-from src.database.database import (
+from src.database import (
     create_table,
     exists_news,
     save_news,
