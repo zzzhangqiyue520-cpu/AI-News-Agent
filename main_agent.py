@@ -1,10 +1,6 @@
 # main_agent.py
 
-
-from src.agent.agent import (
-    run_agent
-)
-
+from src.agent.agent import run_agent
 
 
 def main():
@@ -13,18 +9,15 @@ def main():
         "====== AI News Agent ======"
     )
 
-
     print(
         "输入 exit 退出。"
     )
-
 
     while True:
 
         question = input(
             "\n请输入问题: "
         )
-
 
         question = question.strip()
 
@@ -51,9 +44,8 @@ def main():
 
 
             print(
-                "\n====== AI回答 ======"
+                "\n====== AI回答 ======\n"
             )
-
 
             print(
                 answer
@@ -66,11 +58,9 @@ def main():
                 "\nAgent运行失败:"
             )
 
-
             print(
                 e
             )
-
 
 
 if __name__ == "__main__":

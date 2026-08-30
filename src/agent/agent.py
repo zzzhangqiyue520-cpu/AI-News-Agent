@@ -1,29 +1,24 @@
 # src/agent/agent.py
 
-
 import json
 
-
 from src.ai.llm_client import ask_llm
-
 
 from src.agent.tools import (
     execute_tool
 )
 
-
 from src.agent.tool_schema import (
     TOOLS
 )
 
-
 from src.logger import logger
 
 
+MAX_TOOL_ROUNDS = 5
 
-def run_agent(
-    question
-):
+
+def run_agent(question):
 
     logger.info(
         f"用户问题: {question}"
@@ -34,27 +29,35 @@ def run_agent(
 
         {
             "role": "system",
+
             "content": """
-        你是一个AI科技新闻助手。
+你是一个专业的AI科技新闻研究助手。
 
-        你的任务是根据用户问题，从新闻数据库中检索信息并回答。
+你的任务是根据用户的问题，从新闻数据库中获取信息并进行分析。
 
-        规则：
+你可以使用以下工具：
 
-        1. 需要新闻数据时，必须优先使用工具。
-        2. 可以根据问题选择一个或多个工具。
-        3. 如果问题涉及多个新闻来源，可以调用多个工具。
-        4. 如果问题涉及比较两个来源，可以分别查询两个来源后再进行比较。
-        5. 不要编造数据库不存在的信息。
-        6. 工具返回结果后，结合全部结果回答用户。
-        7. 使用中文回答。
-        8. 如果没有找到相关数据，明确告诉用户。
-        """
+1. 搜索最新新闻
+2. 按新闻分类搜索
+3. 按新闻来源搜索
+4. 按关键词搜索
+5. 读取某篇新闻的完整正文
+
+工作原则：
+
+1. 需要数据库信息时，优先使用工具。
+2. 如果搜索结果已经足够回答问题，可以直接回答。
+3. 如果用户要求深入分析某篇新闻，应先搜索找到新闻ID，再读取完整正文。
+4. 如果完整正文不足以回答问题，可以继续调用其他工具。
+5. 可以连续调用多个工具。
+6. 回答只能基于数据库和工具返回的信息。
+7. 不要编造不存在的信息。
+8. 使用中文回答。
+"""
         },
 
         {
             "role": "user",
-
             "content": question
         }
 
@@ -62,89 +65,162 @@ def run_agent(
 
 
     # =====================================================
-    # 第一次请求：让LLM决定是否调用工具
+    # Agent循环
     # =====================================================
 
-    response = ask_llm(
-        messages=messages,
-        tools=TOOLS
-    )
-
-
-    message = response.choices[0].message
-
-
-    logger.info(
-        f"模型首次返回: {message.content}"
-    )
-
-
-    # =====================================================
-    # 没有调用工具
-    # =====================================================
-
-    if not message.tool_calls:
-
-        return message.content or ""
-
-
-    # =====================================================
-    # 保存assistant的tool call消息
-    # =====================================================
-
-    messages.append(
-        message
-    )
-
-
-    # =====================================================
-    # 执行所有工具调用
-    # =====================================================
-
-    for tool_call in message.tool_calls:
-
-
-        tool_name = (
-            tool_call.function.name
-        )
-
-
-        arguments_text = (
-            tool_call.function.arguments
-        )
-
+    for round_number in range(
+        MAX_TOOL_ROUNDS
+    ):
 
         logger.info(
-            f"模型选择工具: {tool_name}"
+            f"Agent第 {round_number + 1} 轮思考"
         )
 
 
-        logger.info(
-            f"工具参数: {arguments_text}"
+        response = ask_llm(
+            messages=messages,
+            tools=TOOLS
         )
 
 
-        # ---------------------------------------------
-        # 解析参数
-        # ---------------------------------------------
+        message = (
+            response
+            .choices[0]
+            .message
+        )
 
-        try:
 
-            arguments = json.loads(
-                arguments_text
+        # =================================================
+        # 没有工具调用
+        # =================================================
+
+        if not message.tool_calls:
+
+            logger.info(
+                "Agent决定直接回答"
             )
 
-        except json.JSONDecodeError as e:
-
-            logger.error(
-                f"工具参数JSON解析失败: {e}"
+            return (
+                message.content
+                or ""
             )
 
 
-            tool_result = {
-                "error": "工具参数不是合法JSON"
-            }
+        # =================================================
+        # 保存assistant消息
+        # =================================================
 
+        messages.append(
+            message
+        )
+
+
+        # =================================================
+        # 执行所有工具
+        # =================================================
+
+        for tool_call in (
+            message.tool_calls
+        ):
+
+            tool_name = (
+                tool_call
+                .function
+                .name
+            )
+
+
+            arguments_text = (
+                tool_call
+                .function
+                .arguments
+            )
+
+
+            logger.info(
+                f"模型选择工具: {tool_name}"
+            )
+
+
+            logger.info(
+                f"工具参数: {arguments_text}"
+            )
+
+
+            # ---------------------------------------------
+            # 解析参数
+            # ---------------------------------------------
+
+            try:
+
+                arguments = json.loads(
+                    arguments_text
+                )
+
+            except json.JSONDecodeError as e:
+
+                logger.error(
+                    f"工具参数解析失败: {e}"
+                )
+
+
+                result = {
+                    "error":
+                        "工具参数不是合法JSON"
+                }
+
+
+                messages.append(
+                    {
+                        "role": "tool",
+
+                        "tool_call_id":
+                            tool_call.id,
+
+                        "content":
+                            json.dumps(
+                                result,
+                                ensure_ascii=False
+                            )
+                    }
+                )
+
+
+                continue
+
+
+            # ---------------------------------------------
+            # 执行工具
+            # ---------------------------------------------
+
+            try:
+
+                result = execute_tool(
+                    tool_name,
+                    arguments
+                )
+
+
+                logger.info(
+                    f"工具执行完成: {tool_name}"
+                )
+
+
+            except Exception as e:
+
+                logger.exception(
+                    f"工具执行失败: {tool_name}"
+                )
+
+
+                result = {
+                    "error": str(e)
+                }
+
+
+            # ---------------------------------------------
+            # 工具结果
+            # ---------------------------------------------
 
             messages.append(
                 {
@@ -155,85 +231,23 @@ def run_agent(
 
                     "content":
                         json.dumps(
-                            tool_result,
+                            result,
                             ensure_ascii=False
                         )
                 }
             )
 
 
-            continue
-
-
-        # ---------------------------------------------
-        # 执行工具
-        # ---------------------------------------------
-
-        try:
-
-            result = execute_tool(
-                tool_name,
-                arguments
-            )
-
-
-            logger.info(
-                f"工具执行完成: {tool_name}"
-            )
-
-
-        except Exception as e:
-
-            logger.exception(
-                f"工具执行失败: {tool_name}"
-            )
-
-
-            result = {
-                "error": str(e)
-            }
-
-
-        # ---------------------------------------------
-        # 把工具结果交还给LLM
-        # ---------------------------------------------
-
-        messages.append(
-            {
-                "role": "tool",
-
-                "tool_call_id":
-                    tool_call.id,
-
-                "content":
-                    json.dumps(
-                        result,
-                        ensure_ascii=False
-                    )
-            }
-        )
-
-
     # =====================================================
-    # 第二次请求：让LLM根据工具结果回答
+    # 超过最大工具调用轮数
     # =====================================================
 
-    final_response = ask_llm(
-        messages=messages,
-        tools=TOOLS
+    logger.warning(
+        "Agent达到最大工具调用轮数"
     )
 
 
-    final_message = (
-        final_response
-        .choices[0]
-        .message
+    return (
+        "Agent执行步骤过多，"
+        "暂时无法完成这个问题。"
     )
-
-
-    logger.info(
-        "Agent最终回答生成完成"
-    )
-
-
-    return final_message.content or ""

@@ -4,7 +4,8 @@ from src.database import (
     get_latest_news,
     get_news_by_category,
     get_news_by_source,
-    search_news
+    search_news,
+    get_news_detail
 )
 
 
@@ -113,6 +114,41 @@ def search_keyword(keyword):
 
 
 # =========================================================
+# 新闻详情
+# =========================================================
+
+def get_news_detail_tool(news_id):
+
+    """
+    根据新闻ID读取完整新闻正文。
+
+    这个工具用于：
+    先通过搜索工具找到新闻，
+    再根据ID读取完整content。
+    """
+
+    row = get_news_detail(
+        news_id
+    )
+
+    if not row:
+
+        return {
+            "error": "没有找到对应新闻"
+        }
+
+    return {
+        "id": row[0],
+        "title": row[2],
+        "url": row[3],
+        "source": row[4],
+        "content": row[5],
+        "summary": row[6],
+        "category": row[7]
+    }
+
+
+# =========================================================
 # 统一工具执行器
 # =========================================================
 
@@ -136,7 +172,10 @@ def execute_tool(
 
         limit = max(
             1,
-            min(limit, 10)
+            min(
+                limit,
+                10
+            )
         )
 
         return search_latest_news(
@@ -152,6 +191,7 @@ def execute_tool(
         )
 
         if not category:
+
             return []
 
         return search_category_news(
@@ -167,6 +207,7 @@ def execute_tool(
         )
 
         if not source:
+
             return []
 
         return search_source_news(
@@ -182,10 +223,28 @@ def execute_tool(
         )
 
         if not keyword:
+
             return []
 
         return search_keyword(
             keyword
+        )
+
+
+    elif tool_name == "get_news_detail":
+
+        news_id = arguments.get(
+            "news_id"
+        )
+
+        if news_id is None:
+
+            return {
+                "error": "缺少 news_id"
+            }
+
+        return get_news_detail_tool(
+            news_id
         )
 
 

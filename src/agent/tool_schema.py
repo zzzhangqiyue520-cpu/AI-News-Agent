@@ -18,7 +18,8 @@ TOOLS = [
                 "properties": {
                     "limit": {
                         "type": "integer",
-                        "description": "返回的新闻数量，建议1到10条。"
+                        "description":
+                            "返回新闻数量，建议1到10条。"
                     }
                 },
 
@@ -93,7 +94,7 @@ TOOLS = [
             "name": "search_keyword",
 
             "description":
-                "根据关键词搜索新闻标题、摘要或分类。例如 Gemini、Claude、Robotics。",
+                "根据关键词搜索新闻。例如 Gemini、Claude、Robotics。",
 
             "parameters": {
                 "type": "object",
@@ -102,12 +103,40 @@ TOOLS = [
                     "keyword": {
                         "type": "string",
                         "description":
-                            "需要搜索的关键词。"
+                            "要搜索的关键词。"
                     }
                 },
 
                 "required": [
                     "keyword"
+                ]
+            }
+        }
+    },
+
+
+    {
+        "type": "function",
+
+        "function": {
+            "name": "get_news_detail",
+
+            "description":
+                "根据新闻ID读取该新闻的完整正文内容，用于深入阅读和分析某一篇新闻。通常应先使用搜索工具找到目标新闻，再调用该工具读取完整正文。",
+
+            "parameters": {
+                "type": "object",
+
+                "properties": {
+                    "news_id": {
+                        "type": "integer",
+                        "description":
+                            "数据库中新闻的ID。"
+                    }
+                },
+
+                "required": [
+                    "news_id"
                 ]
             }
         }
