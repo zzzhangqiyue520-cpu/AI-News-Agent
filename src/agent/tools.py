@@ -8,6 +8,10 @@ from src.database import (
     get_news_detail
 )
 
+from src.rag.retriever import (
+    retrieve_news
+)
+
 
 # =========================================================
 # 最新新闻
@@ -147,6 +151,15 @@ def get_news_detail_tool(news_id):
         "category": row[7]
     }
 
+def search_knowledge(query, limit=5):
+
+    results = retrieve_news(
+        query,
+        limit
+    )
+
+    return results
+
 
 # =========================================================
 # 统一工具执行器
@@ -247,6 +260,40 @@ def execute_tool(
             news_id
         )
 
+
+    elif tool_name == "search_knowledge":
+
+        query = arguments.get(
+            "query",
+            ""
+        )
+
+        limit = arguments.get(
+            "limit",
+            5
+        )
+
+        if not query:
+            return []
+
+        if not isinstance(
+                limit,
+                int
+        ):
+            limit = 5
+
+        limit = max(
+            1,
+            min(
+                limit,
+                5
+            )
+        )
+
+        return search_knowledge(
+            query,
+            limit
+        )
 
     else:
 

@@ -140,6 +140,43 @@ TOOLS = [
                 ]
             }
         }
+    },
+
+    {
+     "type": "function",
+
+     "function": {
+           "name": "search_knowledge",
+
+            "description":
+                "从AI新闻知识库中检索与用户问题最相关的新闻内容。适合回答需要历史新闻资料、技术细节、背景信息、趋势分析和新闻比较的问题。",
+
+            "parameters": {
+                "type": "object",
+
+                "properties": {
+
+                    "query": {
+                        "type": "string",
+                        "description":
+                            "需要检索的知识，例如“Gemini Robotics 2的全身控制”"
+                    },
+
+                    "limit": {
+                        "type": "integer",
+                        "description":
+                            "返回相关内容的数量，建议1到5条。"
+                    }
+
+                },
+
+                "required": [
+                    "query",
+                    "limit"
+                ]
+            }
+        }
     }
+
 
 ]
