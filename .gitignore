@@ -10,5 +10,8 @@ logs/
 
 data/news.db
 data/chroma/
+data/*.html
+
 
 data/news.json
+
