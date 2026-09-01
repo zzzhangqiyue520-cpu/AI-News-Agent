@@ -108,7 +108,7 @@ def get_collection():
 
 
 # =========================================================
-# 提取简单关键词
+# 提取关键词
 # =========================================================
 
 def extract_keywords(query):
@@ -121,49 +121,68 @@ def extract_keywords(query):
         return []
 
 
+    # -----------------------------------------------------
+    # 停用词
+    # -----------------------------------------------------
+
     stop_words = {
 
         "最近",
         "现在",
         "当前",
+
         "有哪些",
         "有什么",
         "哪些",
         "什么",
+
         "新闻",
         "消息",
+
         "相关",
         "方面",
         "情况",
+
         "一下",
         "具体",
+
         "讲了什么",
         "是什么",
         "怎么样",
+
         "如何",
         "为什么",
         "比较",
+
         "介绍",
         "介绍一下",
+
         "主要",
         "进展",
+
         "的话",
+
         "的",
         "了",
         "呢",
         "吗",
+
         "和",
         "与",
         "及",
+
         "在",
         "是",
         "有",
+
         "？",
         "?",
         "。",
         ".",
+
         "！",
         "!",
+
         "，",
         ","
 
@@ -172,6 +191,13 @@ def extract_keywords(query):
 
     # -----------------------------------------------------
     # 英文 / 数字实体
+    #
+    # 例如：
+    #
+    # Gemini
+    # Robotics
+    # GPT-5
+    # Claude
     # -----------------------------------------------------
 
     english_words = re.findall(
@@ -184,7 +210,7 @@ def extract_keywords(query):
 
 
     # -----------------------------------------------------
-    # 中文 AI 关键词
+    # 中文关键词
     # -----------------------------------------------------
 
     chinese_candidates = [
@@ -245,9 +271,18 @@ def extract_keywords(query):
             )
 
 
+    # -----------------------------------------------------
+    # 合并关键词
+    # -----------------------------------------------------
+
     raw_keywords = (
+
         english_words
-        + chinese_keywords
+
+        +
+
+        chinese_keywords
+
     )
 
 
@@ -284,8 +319,15 @@ def extract_keywords(query):
 # =========================================================
 
 def retrieve_vector(
+
     query,
-    limit=10
+
+    limit=10,
+
+    category=None,
+
+    source=None
+
 ):
 
     query = query.strip()
@@ -307,21 +349,15 @@ def retrieve_vector(
         return []
 
 
-    limit = min(
-        limit,
-        count
-    )
-
-
     # -----------------------------------------------------
-    # 获取 Embedding 模型
+    # 先获取 Embedding 模型
     # -----------------------------------------------------
 
     model = get_embedding_model()
 
 
     # -----------------------------------------------------
-    # Query → Embedding
+    # query → embedding
     # -----------------------------------------------------
 
     query_embedding = (
@@ -340,40 +376,136 @@ def retrieve_vector(
 
 
     # -----------------------------------------------------
-    # Chroma 搜索
+    # 构建 Chroma 查询参数
+    # -----------------------------------------------------
+
+    query_kwargs = {
+
+        "query_embeddings":
+            query_embedding,
+
+        "n_results":
+            min(
+                limit,
+                count
+            )
+
+    }
+
+    # =====================================================
+    # Metadata Filter
+    # =====================================================
+
+    where_conditions = []
+
+    # -----------------------------------------------------
+    # 分类过滤
+    # -----------------------------------------------------
+
+    if category:
+        where_conditions.append(
+            {
+                "category": {
+                    "$eq": category
+                }
+            }
+        )
+
+    # -----------------------------------------------------
+    # 来源过滤
+    # -----------------------------------------------------
+
+    if source:
+        where_conditions.append(
+            {
+                "source": {
+                    "$eq": source
+                }
+            }
+        )
+
+    # -----------------------------------------------------
+    # 根据条件数量构建 where
+    # -----------------------------------------------------
+
+    if len(where_conditions) == 1:
+
+        where = where_conditions[0]
+
+
+    elif len(where_conditions) > 1:
+
+        where = {
+            "$and": where_conditions
+        }
+
+
+    else:
+
+        where = None
+
+    # -----------------------------------------------------
+    # 加入 Chroma 查询参数
+    # -----------------------------------------------------
+
+    if where is not None:
+        query_kwargs["where"] = where
+
+        print(
+            f"RAG Metadata Filter: {where}"
+        )
+
+
+    # -----------------------------------------------------
+    # Chroma 查询
     # -----------------------------------------------------
 
     results = collection.query(
 
-        query_embeddings=query_embedding,
-
-        n_results=limit
+        **query_kwargs
 
     )
 
 
     documents = results.get(
+
         "documents",
+
         [[]]
+
     )[0]
 
 
     metadatas = results.get(
+
         "metadatas",
+
         [[]]
+
     )[0]
 
 
     distances = results.get(
+
         "distances",
+
         [[]]
+
     )[0]
 
 
     news_list = []
 
 
-    for document, metadata, distance in zip(
+    for (
+
+        document,
+
+        metadata,
+
+        distance
+
+    ) in zip(
 
         documents,
 
@@ -383,8 +515,11 @@ def retrieve_vector(
 
     ):
 
+
         news_id = metadata.get(
+
             "news_id"
+
         )
 
 
@@ -394,63 +529,71 @@ def retrieve_vector(
 
 
         # -------------------------------------------------
-        # 距离 → score
+        # distance → vector score
         # -------------------------------------------------
 
         vector_score = (
 
-            1
+            1.0
             /
-            (1 + distance)
+            (
+                1.0
+                +
+                distance
+            )
 
         )
 
 
-        news_list.append({
+        news_list.append(
 
-            "id":
-                news_id,
+            {
 
-            "title":
-                metadata.get(
-                    "title",
-                    ""
-                ),
+                "id":
+                    news_id,
 
-            "url":
-                metadata.get(
-                    "url",
-                    ""
-                ),
+                "title":
+                    metadata.get(
+                        "title",
+                        ""
+                    ),
 
-            "source":
-                metadata.get(
-                    "source",
-                    ""
-                ),
+                "url":
+                    metadata.get(
+                        "url",
+                        ""
+                    ),
 
-            "category":
-                metadata.get(
-                    "category",
-                    ""
-                ),
+                "source":
+                    metadata.get(
+                        "source",
+                        ""
+                    ),
 
-            "content":
-                document,
+                "category":
+                    metadata.get(
+                        "category",
+                        ""
+                    ),
 
-            "distance":
-                distance,
+                "content":
+                    document,
 
-            "vector_score":
-                vector_score,
+                "distance":
+                    distance,
 
-            "keyword_score":
-                0.0,
+                "vector_score":
+                    vector_score,
 
-            "matched_keywords":
-                []
+                "keyword_score":
+                    0.0,
 
-        })
+                "matched_keywords":
+                    []
+
+            }
+
+        )
 
 
     return news_list
@@ -461,12 +604,21 @@ def retrieve_vector(
 # =========================================================
 
 def retrieve_keyword(
+
     query,
-    limit=10
+
+    limit=10,
+
+    category=None,
+
+    source=None
+
 ):
 
     keywords = extract_keywords(
+
         query
+
     )
 
 
@@ -476,7 +628,16 @@ def retrieve_keyword(
 
 
     print(
+
         f"关键词检索: {keywords}"
+
+    )
+
+
+    keyword_count = (
+
+        len(keywords)
+
     )
 
 
@@ -484,7 +645,7 @@ def retrieve_keyword(
 
 
     # -----------------------------------------------------
-    # 每个关键词搜索
+    # 每个关键词分别搜索
     # -----------------------------------------------------
 
     for keyword in keywords:
@@ -500,42 +661,72 @@ def retrieve_keyword(
 
         for item in rows:
 
-            all_results.append({
+            news_id = item[0]
 
-                "id":
-                    item[0],
 
-                "title":
-                    item[1],
+            # ---------------------------------------------
+            # Metadata 过滤
+            # ---------------------------------------------
 
-                "url":
-                    item[2],
+            row_source = item[3]
 
-                "source":
-                    item[3],
+            row_category = item[5]
 
-                "summary":
-                    item[4],
 
-                "category":
-                    item[5],
+            if source:
 
-                "content":
-                    "",
+                if row_source != source:
 
-                "distance":
-                    None,
+                    continue
 
-                "vector_score":
-                    0.0,
 
-                "keyword_score":
-                    1.0,
+            if category:
 
-                "matched_keywords":
-                    [keyword]
+                if row_category != category:
 
-            })
+                    continue
+
+
+            all_results.append(
+
+                {
+
+                    "id":
+                        news_id,
+
+                    "title":
+                        item[1],
+
+                    "url":
+                        item[2],
+
+                    "source":
+                        row_source,
+
+                    "summary":
+                        item[4],
+
+                    "category":
+                        row_category,
+
+                    "content":
+                        "",
+
+                    "distance":
+                        None,
+
+                    "vector_score":
+                        0.0,
+
+                    "keyword_score":
+                        0.0,
+
+                    "matched_keywords":
+                        [keyword]
+
+                }
+
+            )
 
 
     if not all_results:
@@ -544,7 +735,14 @@ def retrieve_keyword(
 
 
     # -----------------------------------------------------
-    # 新闻去重
+    # 同一新闻去重
+    #
+    # 同一篇新闻可能命中：
+    #
+    # Gemini
+    # Robotics
+    #
+    # 两个关键词
     # -----------------------------------------------------
 
     unique_results = {}
@@ -557,9 +755,7 @@ def retrieve_keyword(
 
         if news_id not in unique_results:
 
-            unique_results[
-                news_id
-            ] = item
+            unique_results[news_id] = item
 
             continue
 
@@ -576,19 +772,81 @@ def retrieve_keyword(
 
 
         for keyword in item[
+
             "matched_keywords"
+
         ]:
 
             if keyword not in old_keywords:
 
                 old_keywords.append(
+
                     keyword
+
                 )
 
 
-    return list(
+    # -----------------------------------------------------
+    # 计算 Keyword Score
+    #
+    # 命中：
+    #
+    # 1 / 2 → 0.5
+    # 2 / 2 → 1.0
+    #
+    # -----------------------------------------------------
+
+    for item in unique_results.values():
+
+        matched_count = (
+
+            len(
+
+                item[
+                    "matched_keywords"
+                ]
+
+            )
+
+        )
+
+
+        item["keyword_score"] = (
+
+            matched_count
+
+            /
+
+            keyword_count
+
+        )
+
+
+    # -----------------------------------------------------
+    # 按 Keyword Score 排序
+    # -----------------------------------------------------
+
+    results = list(
+
         unique_results.values()
-    )[:limit]
+
+    )
+
+
+    results.sort(
+
+        key=lambda item:
+
+            item[
+                "keyword_score"
+            ],
+
+        reverse=True
+
+    )
+
+
+    return results[:limit]
 
 
 # =========================================================
@@ -596,8 +854,15 @@ def retrieve_keyword(
 # =========================================================
 
 def retrieve_news(
+
     query,
-    limit=5
+
+    limit=5,
+
+    category=None,
+
+    source=None
+
 ):
 
     query = query.strip()
@@ -614,12 +879,19 @@ def retrieve_news(
 
     vector_results = retrieve_vector(
 
-        query,
+        query=query,
 
         limit=max(
+
             limit * 5,
+
             10
-        )
+
+        ),
+
+        category=category,
+
+        source=source
 
     )
 
@@ -630,24 +902,33 @@ def retrieve_news(
 
     keyword_results = retrieve_keyword(
 
-        query,
+        query=query,
 
         limit=max(
+
             limit * 5,
+
             10
-        )
+
+        ),
+
+        category=category,
+
+        source=source
 
     )
 
 
     # -----------------------------------------------------
-    # 合并结果
+    # 合并
     # -----------------------------------------------------
 
     merged = {}
 
 
-    # Vector
+    # -----------------------------------------------------
+    # Vector Results
+    # -----------------------------------------------------
 
     for item in vector_results:
 
@@ -658,8 +939,37 @@ def retrieve_news(
 
             merged[news_id] = item
 
+        else:
 
-    # Keyword
+            # 同一新闻如果出现多个 Chunk，
+            # 保留最好的 vector score
+
+            if (
+
+                item["vector_score"]
+
+                >
+
+                merged[
+                    news_id
+                ][
+                    "vector_score"
+                ]
+
+            ):
+
+                merged[
+                    news_id
+                ][
+                    "vector_score"
+                ] = item[
+                    "vector_score"
+                ]
+
+
+    # -----------------------------------------------------
+    # Keyword Results
+    # -----------------------------------------------------
 
     for item in keyword_results:
 
@@ -670,65 +980,160 @@ def retrieve_news(
 
             merged[news_id] = item
 
+
         else:
 
             merged[
                 news_id
-            ]["keyword_score"] = (
-
-                item[
-                    "keyword_score"
-                ]
-
-            )
+            ][
+                "keyword_score"
+            ] = item[
+                "keyword_score"
+            ]
 
 
             old_keywords = (
+
                 merged[
                     news_id
                 ].get(
+
                     "matched_keywords",
+
                     []
+
                 )
+
             )
 
 
             for keyword in item[
+
                 "matched_keywords"
+
             ]:
 
                 if keyword not in old_keywords:
 
                     old_keywords.append(
+
                         keyword
+
                     )
 
 
-    # -----------------------------------------------------
+    # =====================================================
+    # Metadata Score
+    # =====================================================
+
+    for item in merged.values():
+
+        metadata_score = 0.0
+
+
+        # 指定分类并且匹配
+
+        if category:
+
+            if (
+
+                item.get(
+                    "category"
+                )
+
+                ==
+
+                category
+
+            ):
+
+                metadata_score += 0.5
+
+
+        # 指定来源并且匹配
+
+        if source:
+
+            if (
+
+                item.get(
+                    "source"
+                )
+
+                ==
+
+                source
+
+            ):
+
+                metadata_score += 0.5
+
+
+        item["metadata_score"] = (
+
+            metadata_score
+
+        )
+
+
+    # =====================================================
     # Hybrid Score
-    # -----------------------------------------------------
+    # =====================================================
 
     for item in merged.values():
 
         vector_score = item.get(
+
             "vector_score",
+
             0.0
+
         )
 
 
         keyword_score = item.get(
+
             "keyword_score",
+
             0.0
+
         )
 
 
+        metadata_score = item.get(
+
+            "metadata_score",
+
+            0.0
+
+        )
+
+
+        # -------------------------------------------------
+        # 当前版本权重
+        #
+        # Vector   60%
+        # Keyword  30%
+        # Metadata 10%
+        # -------------------------------------------------
+
         item["hybrid_score"] = (
 
-            0.7 * vector_score
+            0.6
+            *
+            vector_score
 
             +
 
-            0.3 * keyword_score
+            0.3
+            *
+            keyword_score
+
+            +
+
+            0.1
+            *
+            metadata_score
 
         )
 
@@ -738,18 +1143,27 @@ def retrieve_news(
     # -----------------------------------------------------
 
     results = list(
+
         merged.values()
+
     )
 
 
     results.sort(
 
         key=lambda item:
-            item["hybrid_score"],
+
+            item[
+                "hybrid_score"
+            ],
 
         reverse=True
 
     )
 
+
+    # -----------------------------------------------------
+    # Top-K
+    # -----------------------------------------------------
 
     return results[:limit]

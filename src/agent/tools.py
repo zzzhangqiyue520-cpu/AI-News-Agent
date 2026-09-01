@@ -151,11 +151,23 @@ def get_news_detail_tool(news_id):
         "category": row[7]
     }
 
-def search_knowledge(query, limit=5):
+def search_knowledge(
+    query,
+    limit=5,
+    category=None,
+    source=None
+):
 
     results = retrieve_news(
-        query,
-        limit
+
+        query=query,
+
+        limit=limit,
+
+        category=category,
+
+        source=source
+
     )
 
     return results
@@ -261,38 +273,73 @@ def execute_tool(
         )
 
 
+
     elif tool_name == "search_knowledge":
 
         query = arguments.get(
+
             "query",
+
             ""
+
         )
 
         limit = arguments.get(
+
             "limit",
+
             5
+
+        )
+
+        category = arguments.get(
+
+            "category"
+
+        )
+
+        source = arguments.get(
+
+            "source"
+
         )
 
         if not query:
             return []
 
         if not isinstance(
+
                 limit,
+
                 int
+
         ):
             limit = 5
 
         limit = max(
+
             1,
+
             min(
+
                 limit,
+
                 5
+
             )
+
         )
 
         return search_knowledge(
-            query,
-            limit
+
+            query=query,
+
+            limit=limit,
+
+            category=category,
+
+            source=source
+
         )
 
     else:

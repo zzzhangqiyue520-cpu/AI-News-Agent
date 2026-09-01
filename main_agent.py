@@ -15,9 +15,13 @@ def main():
 
     while True:
 
-        question = input(
-            "\n请输入问题: "
+        print(
+            "\n请输入问题: ",
+            end="",
+            flush=True
         )
+
+        question = input()
 
         question = question.strip()
 

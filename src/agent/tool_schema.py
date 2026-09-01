@@ -177,29 +177,34 @@ TOOLS = [
                 "适用于需要解释、原因分析、技术细节、背景、意义、趋势或比较的问题。"
                 "例如“为什么Gemini Robotics 2重要”“它是怎么实现全身控制的”。"
                 "如果用户只是要求列出最近新闻，不要使用此工具。"
+                "如果已经指定 category 或 source，该工具会使用 metadata filter 缩小检索范围。如果该工具已经返回足够结果，不要再调用其他搜索工具重复查询相同范围。"
             ),
 
             "parameters": {
                 "type": "object",
 
                 "properties": {
+
                     "query": {
                         "type": "string",
-
-                        "description": (
-                            "用于知识库检索的问题或主题。"
-                            "应尽量描述用户真正想了解的知识点。"
-                        )
+                        "description": "需要检索的知识或问题。"
                     },
 
                     "limit": {
                         "type": "integer",
+                        "description": "返回相关知识块数量，建议3到5。"
+                     },
 
-                        "description": (
-                            "返回相关知识块数量，"
-                            "建议 3 到 5。"
-                        )
+                    "category": {
+                        "type": "string",
+                        "description": "可选的新闻分类，例如机器人、大模型、开源、科研。没有明确分类时留空。"
+                    },
+
+                    "source": {
+                        "type": "string",
+                        "description": "可选的新闻来源，例如DeepMind、Anthropic。没有明确来源时留空。"
                     }
+
                 },
 
                 "required": [
