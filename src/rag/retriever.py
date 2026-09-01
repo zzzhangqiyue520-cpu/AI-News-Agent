@@ -1,11 +1,12 @@
 # src/rag/retriever.py
 
 import re
-from pathlib import Path
 
 import chromadb
 
-from sentence_transformers import SentenceTransformer
+from sentence_transformers import (
+    SentenceTransformer
+)
 
 from src.database import (
     PROJECT_ROOT,
@@ -34,9 +35,51 @@ MODEL_NAME = (
 # Embedding 模型
 # =========================================================
 
-model = SentenceTransformer(
-    MODEL_NAME
-)
+_model = None
+
+
+def get_embedding_model():
+
+    global _model
+
+
+    if _model is None:
+
+        print(
+            "正在加载本地 Embedding 模型..."
+        )
+
+
+        try:
+
+            _model = SentenceTransformer(
+
+                MODEL_NAME,
+
+                local_files_only=True
+
+            )
+
+
+        except Exception as e:
+
+            print(
+                "本地 Embedding 模型加载失败:"
+            )
+
+            print(
+                e
+            )
+
+            raise
+
+
+        print(
+            "Embedding 模型加载完成。"
+        )
+
+
+    return _model
 
 
 # =========================================================
@@ -46,16 +89,20 @@ model = SentenceTransformer(
 def get_collection():
 
     client = chromadb.PersistentClient(
+
         path=str(
             CHROMA_DIR
         )
+
     )
+
 
     collection = (
         client.get_or_create_collection(
             name=COLLECTION_NAME
         )
     )
+
 
     return collection
 
@@ -65,26 +112,17 @@ def get_collection():
 # =========================================================
 
 def extract_keywords(query):
-    """
-    从用户问题中提取用于 SQLite 关键词搜索的关键词。
-
-    当前采用简单规则：
-    1. 提取英文 / 数字实体
-    2. 提取常见中文 AI 新闻关键词
-    3. 去除常见停用词
-    """
 
     query = query.strip()
 
+
     if not query:
+
         return []
 
 
-    # -----------------------------------------------------
-    # 常见停用词
-    # -----------------------------------------------------
-
     stop_words = {
+
         "最近",
         "现在",
         "当前",
@@ -120,7 +158,6 @@ def extract_keywords(query):
         "在",
         "是",
         "有",
-        "什么",
         "？",
         "?",
         "。",
@@ -129,27 +166,25 @@ def extract_keywords(query):
         "!",
         "，",
         ","
+
     }
 
 
     # -----------------------------------------------------
     # 英文 / 数字实体
-    #
-    # Gemini
-    # Gemini 3.5
-    # Claude
-    # Robotics
-    # AI
     # -----------------------------------------------------
 
     english_words = re.findall(
+
         r"[A-Za-z][A-Za-z0-9.-]*",
+
         query
+
     )
 
 
     # -----------------------------------------------------
-    # 常见中文关键词
+    # 中文 AI 关键词
     # -----------------------------------------------------
 
     chinese_candidates = [
@@ -210,10 +245,6 @@ def extract_keywords(query):
             )
 
 
-    # -----------------------------------------------------
-    # 合并
-    # -----------------------------------------------------
-
     raw_keywords = (
         english_words
         + chinese_keywords
@@ -229,17 +260,12 @@ def extract_keywords(query):
 
 
         if not keyword:
+
             continue
 
 
         if keyword in stop_words:
-            continue
 
-
-        if len(keyword) == 1 and not re.match(
-            r"[A-Za-z0-9]",
-            keyword
-        ):
             continue
 
 
@@ -264,6 +290,7 @@ def retrieve_vector(
 
     query = query.strip()
 
+
     if not query:
 
         return []
@@ -272,20 +299,25 @@ def retrieve_vector(
     collection = get_collection()
 
 
-    collection_count = (
-        collection.count()
-    )
+    count = collection.count()
 
 
-    if collection_count == 0:
+    if count == 0:
 
         return []
 
 
     limit = min(
         limit,
-        collection_count
+        count
     )
+
+
+    # -----------------------------------------------------
+    # 获取 Embedding 模型
+    # -----------------------------------------------------
+
+    model = get_embedding_model()
 
 
     # -----------------------------------------------------
@@ -293,11 +325,17 @@ def retrieve_vector(
     # -----------------------------------------------------
 
     query_embedding = (
+
         model.encode(
+
             [query],
+
             normalize_embeddings=True
+
         )
+
         .tolist()
+
     )
 
 
@@ -355,16 +393,16 @@ def retrieve_vector(
             continue
 
 
-        # cosine distance
-        #
-        # 距离越小越相关
-        #
-        # 转成一个简单的 0~1 左右的 score
+        # -------------------------------------------------
+        # 距离 → score
+        # -------------------------------------------------
 
         vector_score = (
+
             1
             /
             (1 + distance)
+
         )
 
 
@@ -446,7 +484,7 @@ def retrieve_keyword(
 
 
     # -----------------------------------------------------
-    # 每一个关键词分别搜索
+    # 每个关键词搜索
     # -----------------------------------------------------
 
     for keyword in keywords:
@@ -506,9 +544,7 @@ def retrieve_keyword(
 
 
     # -----------------------------------------------------
-    # 同一新闻去重
-    #
-    # 同一篇新闻可能命中多个关键词
+    # 新闻去重
     # -----------------------------------------------------
 
     unique_results = {}
@@ -521,17 +557,22 @@ def retrieve_keyword(
 
         if news_id not in unique_results:
 
-            unique_results[news_id] = item
+            unique_results[
+                news_id
+            ] = item
 
             continue
 
 
-        # 已存在：
-        # 合并关键词
+        old_keywords = (
 
-        old_keywords = unique_results[
-            news_id
-        ]["matched_keywords"]
+            unique_results[
+                news_id
+            ][
+                "matched_keywords"
+            ]
+
+        )
 
 
         for keyword in item[
@@ -545,20 +586,9 @@ def retrieve_keyword(
                 )
 
 
-        # 当前版本：
-        # 命中关键词就算 keyword_score = 1
-
-        unique_results[
-            news_id
-        ]["keyword_score"] = 1.0
-
-
-    results = list(
+    return list(
         unique_results.values()
-    )
-
-
-    return results[:limit]
+    )[:limit]
 
 
 # =========================================================
@@ -570,27 +600,6 @@ def retrieve_news(
     limit=5
 ):
 
-    """
-    混合检索。
-
-    同时执行：
-
-    1. Vector Retrieval
-    2. Keyword Retrieval
-
-    然后：
-
-    合并
-    ↓
-    按 news_id 去重
-    ↓
-    计算综合分数
-    ↓
-    排序
-    ↓
-    返回 Top-K
-    """
-
     query = query.strip()
 
 
@@ -600,9 +609,7 @@ def retrieve_news(
 
 
     # -----------------------------------------------------
-    # 1. Vector Retrieval
-    #
-    # 多取一些候选，方便后面去重/合并
+    # Vector Retrieval
     # -----------------------------------------------------
 
     vector_results = retrieve_vector(
@@ -618,7 +625,7 @@ def retrieve_news(
 
 
     # -----------------------------------------------------
-    # 2. Keyword Retrieval
+    # Keyword Retrieval
     # -----------------------------------------------------
 
     keyword_results = retrieve_keyword(
@@ -634,13 +641,13 @@ def retrieve_news(
 
 
     # -----------------------------------------------------
-    # 3. 合并
+    # 合并结果
     # -----------------------------------------------------
 
     merged = {}
 
 
-    # 先加入向量结果
+    # Vector
 
     for item in vector_results:
 
@@ -652,7 +659,7 @@ def retrieve_news(
             merged[news_id] = item
 
 
-    # 再加入关键词结果
+    # Keyword
 
     for item in keyword_results:
 
@@ -665,8 +672,6 @@ def retrieve_news(
 
         else:
 
-            # 保存关键词命中状态
-
             merged[
                 news_id
             ]["keyword_score"] = (
@@ -678,13 +683,13 @@ def retrieve_news(
             )
 
 
-            # 合并匹配关键词
-
-            old_keywords = merged[
-                news_id
-            ].get(
-                "matched_keywords",
-                []
+            old_keywords = (
+                merged[
+                    news_id
+                ].get(
+                    "matched_keywords",
+                    []
+                )
             )
 
 
@@ -700,7 +705,7 @@ def retrieve_news(
 
 
     # -----------------------------------------------------
-    # 4. 计算 Hybrid Score
+    # Hybrid Score
     # -----------------------------------------------------
 
     for item in merged.values():
@@ -717,13 +722,6 @@ def retrieve_news(
         )
 
 
-        # -------------------------------------------------
-        # 当前版本：
-        #
-        # Vector 70%
-        # Keyword 30%
-        # -------------------------------------------------
-
         item["hybrid_score"] = (
 
             0.7 * vector_score
@@ -736,7 +734,7 @@ def retrieve_news(
 
 
     # -----------------------------------------------------
-    # 5. 排序
+    # 排序
     # -----------------------------------------------------
 
     results = list(
@@ -753,9 +751,5 @@ def retrieve_news(
 
     )
 
-
-    # -----------------------------------------------------
-    # 6. 返回 Top-K
-    # -----------------------------------------------------
 
     return results[:limit]
