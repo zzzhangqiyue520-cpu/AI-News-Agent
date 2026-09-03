@@ -36,7 +36,8 @@ def get_connection():
     )
 
     conn = sqlite3.connect(
-        DB_PATH
+        DB_PATH,
+        timeout=10
     )
 
     return conn
@@ -154,80 +155,148 @@ def save_news(
     news
 ):
 
-    conn = get_connection()
+    max_retries = 3
 
-    cursor = conn.cursor()
+    for attempt in range(
+        max_retries
+    ):
 
+        conn = None
 
-    analysis = news.get(
-        "analysis",
-        {}
-    )
+        try:
 
+            conn = get_connection()
 
-    cursor.execute(
-        """
-        INSERT OR IGNORE INTO news(
+            cursor = conn.cursor()
 
-            hash,
-
-            title,
-
-            url,
-
-            source,
-
-            content,
-
-            summary,
-
-            category,
-
-            created_at
-
-        )
-
-        VALUES(
-            ?, ?, ?, ?, ?, ?, ?, ?
-        )
-        """,
-        (
-            news["id"],
-
-            news["title"],
-
-            news["url"],
-
-            news.get(
-                "source",
-                ""
-            ),
-
-            news.get(
-                "content",
-                ""
-            ),
-
-            analysis.get(
-                "summary",
-                ""
-            ),
-
-            analysis.get(
-                "category",
-                "其他"
-            ),
-
-            int(
-                time.time()
+            analysis = news.get(
+                "analysis",
+                {}
             )
-        )
-    )
 
+            cursor.execute(
+                """
+                INSERT OR IGNORE INTO news(
 
-    conn.commit()
+                    hash,
 
-    conn.close()
+                    title,
+
+                    url,
+
+                    source,
+
+                    content,
+
+                    summary,
+
+                    category,
+
+                    created_at
+
+                )
+
+                VALUES(
+                    ?, ?, ?, ?, ?, ?, ?, ?
+                )
+                """,
+                (
+                    news["id"],
+
+                    news["title"],
+
+                    news["url"],
+
+                    news.get(
+                        "source",
+                        ""
+                    ),
+
+                    news.get(
+                        "content",
+                        ""
+                    ),
+
+                    analysis.get(
+                        "summary",
+                        ""
+                    ),
+
+                    analysis.get(
+                        "category",
+                        "其他"
+                    ),
+
+                    int(
+                        time.time()
+                    )
+                )
+            )
+
+            conn.commit()
+
+            conn.close()
+
+            return True
+
+        except sqlite3.OperationalError as e:
+
+            if conn is not None:
+
+                conn.rollback()
+                conn.close()
+
+            # ---------------------------------------------
+            # 只针对 database is locked 重试
+            # ---------------------------------------------
+
+            if "database is locked" in str(e):
+
+                print(
+                    f"数据库被锁定，"
+                    f"第 {attempt + 1} 次尝试失败"
+                )
+
+                if attempt < max_retries - 1:
+
+                    time.sleep(1)
+
+                    continue
+
+                print(
+                    "数据库连续多次被锁定，"
+                    "本条新闻保存失败。"
+                )
+
+                return False
+
+            # ---------------------------------------------
+            # 其他 SQLite 错误
+            # 不进行无意义重试
+            # ---------------------------------------------
+
+            print(
+                "SQLite 保存失败:",
+                e
+            )
+
+            return False
+
+        except Exception as e:
+
+            if conn is not None:
+
+                conn.rollback()
+                conn.close()
+
+            print(
+                "保存新闻失败:",
+                e
+            )
+
+            return False
+
+    return False
 
 
 # =========================================================

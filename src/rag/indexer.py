@@ -1,21 +1,13 @@
 # src/rag/indexer.py
 
-
 import chromadb
 
-
-from sentence_transformers import (
-    SentenceTransformer
-)
-
+from sentence_transformers import SentenceTransformer
 
 from src.database import (
     PROJECT_ROOT,
-    DB_PATH,
-    create_table,
     get_news
 )
-
 
 from src.rag.chunker import (
     split_text
@@ -32,9 +24,7 @@ CHROMA_DIR = (
     / "chroma"
 )
 
-
 COLLECTION_NAME = "news"
-
 
 MODEL_NAME = (
     "paraphrase-multilingual-MiniLM-L12-v2"
@@ -48,34 +38,26 @@ MODEL_NAME = (
 def get_embedding_model():
 
     print(
-        "正在加载 Embedding 模型..."
+        "正在加载本地 Embedding 模型..."
     )
-
 
     model = SentenceTransformer(
-        MODEL_NAME
+        MODEL_NAME,
+        local_files_only=True
     )
-
 
     print(
         "Embedding 模型加载完成。"
     )
 
-
     return model
 
 
 # =========================================================
-# 获取 Chroma
+# 获取 Chroma Collection
 # =========================================================
 
 def get_collection():
-
-    CHROMA_DIR.mkdir(
-        parents=True,
-        exist_ok=True
-    )
-
 
     client = chromadb.PersistentClient(
         path=str(
@@ -83,115 +65,195 @@ def get_collection():
         )
     )
 
-
     collection = (
         client.get_or_create_collection(
             name=COLLECTION_NAME
         )
     )
 
-
     return collection
 
 
 # =========================================================
-# 构建向量库
+# 获取已经存在的新闻 ID
+# =========================================================
+
+def get_indexed_news_ids(
+    collection
+):
+
+    """
+    获取已经进入 Chroma 的新闻 ID。
+
+    Chroma 中一篇新闻可能对应多个 Chunk。
+    只要某个 news_id 已经出现，
+    就认为这篇新闻已经完成索引。
+    """
+
+    if collection.count() == 0:
+
+        return set()
+
+    result = collection.get(
+        include=[
+            "metadatas"
+        ]
+    )
+
+    metadatas = result.get(
+        "metadatas",
+        []
+    )
+
+    indexed_ids = set()
+
+    for metadata in metadatas:
+
+        if not metadata:
+            continue
+
+        news_id = metadata.get(
+            "news_id"
+        )
+
+        if news_id is None:
+            continue
+
+        indexed_ids.add(
+            str(news_id)
+        )
+
+    return indexed_ids
+
+
+# =========================================================
+# 主索引函数
 # =========================================================
 
 def build_index():
 
     print(
-        "====== 开始构建 Chunk 向量库 ======"
+        "\n====== 开始增量构建新闻向量库 ======"
     )
 
+    # -----------------------------------------------------
+    # 显示路径
+    # -----------------------------------------------------
 
     print(
-        "SQLite 数据库:",
-        DB_PATH
+        f"SQLite 数据库: "
+        f"{PROJECT_ROOT / 'data' / 'news.db'}"
     )
 
+    print(
+        f"Chroma 数据位置: "
+        f"{CHROMA_DIR}"
+    )
 
     # -----------------------------------------------------
-    # 确保数据库表存在
-    # -----------------------------------------------------
-
-    create_table()
-
-
-    # -----------------------------------------------------
-    # 读取新闻
+    # 获取数据库新闻
     # -----------------------------------------------------
 
     rows = get_news()
-
 
     print(
         f"SQLite 新闻数量: {len(rows)}"
     )
 
-
-    if not rows:
-
-        print(
-            "没有新闻。"
-        )
-
-        return
-
-
     # -----------------------------------------------------
-    # Embedding 模型
-    # -----------------------------------------------------
-
-    model = get_embedding_model()
-
-
-    # -----------------------------------------------------
-    # Chroma
+    # 获取 Chroma
     # -----------------------------------------------------
 
     collection = get_collection()
 
-
-    # -----------------------------------------------------
-    # 清空旧 Collection
-    # -----------------------------------------------------
+    chroma_count = collection.count()
 
     print(
-        "清理旧向量数据..."
+        f"Chroma 当前数量: "
+        f"{chroma_count}"
     )
 
+    # -----------------------------------------------------
+    # 获取已经索引的新闻 ID
+    # -----------------------------------------------------
 
-    old_ids = collection.get().get(
-        "ids",
-        []
-    )
-
-
-    if old_ids:
-
-        collection.delete(
-            ids=old_ids
+    indexed_news_ids = (
+        get_indexed_news_ids(
+            collection
         )
+    )
 
-
-    documents = []
-
-    ids = []
-
-    metadatas = []
-
-
-    total_chunks = 0
-
+    print(
+        f"Chroma 已存在新闻数量: "
+        f"{len(indexed_news_ids)}"
+    )
 
     # -----------------------------------------------------
-    # 新闻 → Chunk
+    # 找出新增新闻
     # -----------------------------------------------------
+
+    new_rows = []
 
     for row in rows:
 
-        news_id = row[0]
+        news_id = str(
+            row[0]
+        )
+
+        if news_id not in indexed_news_ids:
+
+            new_rows.append(
+                row
+            )
+
+    # -----------------------------------------------------
+    # 没有新增新闻
+    # -----------------------------------------------------
+
+    if not new_rows:
+
+        print(
+            "没有发现新的新闻。"
+        )
+
+        print(
+            "无需进行 Embedding。"
+        )
+
+        print(
+            "====== 增量索引完成 ======\n"
+        )
+
+        return
+
+    print(
+        f"发现新增新闻: "
+        f"{len(new_rows)} 条"
+    )
+
+    # -----------------------------------------------------
+    # 加载 Embedding 模型
+    #
+    # 只有发现新增新闻时才加载
+    # -----------------------------------------------------
+
+    model = get_embedding_model()
+
+    documents = []
+
+    metadatas = []
+
+    ids = []
+
+    # -----------------------------------------------------
+    # 处理新增新闻
+    # -----------------------------------------------------
+
+    for row in new_rows:
+
+        news_id = str(
+            row[0]
+        )
 
         title = row[2]
 
@@ -199,43 +261,49 @@ def build_index():
 
         source = row[4]
 
-        content = row[5]
+        content = row[5] or ""
 
-        category = row[7]
+        summary = row[6] or ""
 
+        category = row[7] or ""
+
+        # -------------------------------------------------
+        # 正文为空时使用摘要
+        # -------------------------------------------------
+
+        if not content:
+
+            content = summary or ""
+
+        # -------------------------------------------------
+        # 没有任何文本
+        # -------------------------------------------------
 
         if not content:
 
             print(
-                f"跳过无正文新闻: {title}"
+                f"新闻 {news_id} "
+                f"没有可用文本，跳过。"
             )
 
             continue
 
-
-        # ---------------------------------------------
-        # 切分
-        # ---------------------------------------------
+        # -------------------------------------------------
+        # Chunk
+        # -------------------------------------------------
 
         chunks = split_text(
-
-            content,
-
-            chunk_size=1000,
-
-            overlap=200
-
+            content
         )
-
 
         print(
-            f"{title} -> {len(chunks)} 个 Chunk"
+            f"新闻 {news_id}: "
+            f"{len(chunks)} 个 Chunk"
         )
 
-
-        # ---------------------------------------------
-        # 每个 Chunk 独立进入向量库
-        # ---------------------------------------------
+        # -------------------------------------------------
+        # 保存 Chunk
+        # -------------------------------------------------
 
         for chunk_index, chunk in enumerate(
             chunks
@@ -245,128 +313,115 @@ def build_index():
                 f"{news_id}_{chunk_index}"
             )
 
-
-            document = (
-                f"标题：{title}\n"
-                f"来源：{source}\n"
-                f"分类：{category}\n\n"
-                f"{chunk}"
-            )
-
-
-            documents.append(
-                document
-            )
-
-
             ids.append(
                 chunk_id
             )
 
-
-            metadatas.append(
-                {
-                    "news_id": news_id,
-
-                    "title": title,
-
-                    "url": url,
-
-                    "source": source,
-
-                    "category": category,
-
-                    "chunk_index":
-                        chunk_index
-                }
+            documents.append(
+                chunk
             )
 
+            metadatas.append({
 
-            total_chunks += 1
+                "news_id":
+                    news_id,
 
+                "title":
+                    title or "",
+
+                "url":
+                    url or "",
+
+                "source":
+                    source or "",
+
+                "category":
+                    category or "",
+
+                "chunk_index":
+                    chunk_index
+
+            })
+
+    # -----------------------------------------------------
+    # 没有可用 Chunk
+    # -----------------------------------------------------
 
     if not documents:
 
         print(
-            "没有可建立向量的 Chunk。"
+            "没有找到可以进行 Embedding 的新文本。"
+        )
+
+        print(
+            "====== 增量索引结束 ======\n"
         )
 
         return
 
-
     print(
-        f"\n总 Chunk 数量: {total_chunks}"
+        f"准备向量化 "
+        f"{len(documents)} 个新 Chunk..."
     )
-
 
     # -----------------------------------------------------
     # Embedding
     # -----------------------------------------------------
 
-    print(
-        "开始生成 Embedding..."
-    )
-
-
     embeddings = model.encode(
-
         documents,
-
         normalize_embeddings=True,
-
         show_progress_bar=True
-
     ).tolist()
-
 
     print(
         "Embedding 生成完成。"
     )
 
-
     # -----------------------------------------------------
     # 写入 Chroma
     # -----------------------------------------------------
 
-    collection.upsert(
-
+    collection.add(
         ids=ids,
-
         documents=documents,
-
-        embeddings=embeddings,
-
-        metadatas=metadatas
-
+        metadatas=metadatas,
+        embeddings=embeddings
     )
 
+    # -----------------------------------------------------
+    # 最终统计
+    # -----------------------------------------------------
+
+    final_count = collection.count()
 
     print(
-        "\n====== Chunk 向量库构建完成 ======"
+        "\n====== 向量库增量更新完成 ======"
     )
-
 
     print(
-        f"新闻数量: {len(rows)}"
+        f"新增新闻数量: "
+        f"{len(new_rows)}"
     )
-
 
     print(
-        f"Chunk 数量: {total_chunks}"
+        f"新增 Chunk 数量: "
+        f"{len(documents)}"
     )
-
 
     print(
-        "Chroma 数据位置:",
-        CHROMA_DIR
+        f"Chroma 当前 Chunk 数量: "
+        f"{final_count}"
     )
-
 
     print(
-        "Chroma 当前数量:",
-        collection.count()
+        "================================\n"
     )
 
+
+# =========================================================
+# 程序入口
+# =========================================================
 
 if __name__ == "__main__":
 

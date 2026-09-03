@@ -28,82 +28,95 @@ class DeepMindDetail:
             total=REQUEST_TIMEOUT
         )
 
-
-
     async def fetch_html(
             self,
             url
     ):
 
+        max_retries = 3
 
-        for attempt in range(3):
+        for attempt in range(
+                max_retries
+        ):
 
             try:
 
-
                 async with aiohttp.ClientSession(
-                    timeout=self.timeout
+                        timeout=self.timeout
                 ) as session:
 
-
                     async with session.get(
-                        url,
-                        headers=self.headers
+                            url,
+                            headers=self.headers
                     ) as response:
-
-
                         print(
                             "文章状态:",
                             response.status
                         )
 
+                        # -------------------------------------
+                        # HTTP 成功
+                        # -------------------------------------
 
-                        if response.status != 200:
+                        if response.status == 200:
+                            return await response.text()
 
-                            return ""
+                        # -------------------------------------
+                        # HTTP 失败
+                        # -------------------------------------
 
-
-                        return await response.text()
-
-
+                        print(
+                            f"HTTP错误，第{attempt + 1}次尝试:",
+                            response.status,
+                            url
+                        )
 
             except asyncio.TimeoutError:
-
 
                 print(
                     f"请求超时，第{attempt + 1}次尝试:",
                     url
                 )
 
-
-                await asyncio.sleep(2)
-
-
-
-            except Exception as e:
-
+            except aiohttp.ClientError as e:
 
                 print(
                     f"请求失败，第{attempt + 1}次尝试:",
                     url
                 )
 
+                print(
+                    "错误:",
+                    e
+                )
+
+            except Exception as e:
+
+                print(
+                    f"未知错误，第{attempt + 1}次尝试:",
+                    url
+                )
 
                 print(
                     "错误:",
                     e
                 )
 
+            # -----------------------------------------
+            # 不是最后一次才等待
+            # -----------------------------------------
 
+            if attempt < max_retries - 1:
                 await asyncio.sleep(2)
 
-
+        # ---------------------------------------------
+        # 三次都失败
+        # ---------------------------------------------
 
         print(
             "最终请求失败:",
             url
         )
-
 
         return ""
 

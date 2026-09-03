@@ -1,4 +1,6 @@
 import aiohttp
+import asyncio
+
 
 from bs4 import BeautifulSoup
 
@@ -32,42 +34,82 @@ class DeepMindCrawler:
             total=REQUEST_TIMEOUT
         )
 
-
-
     async def fetch_html(
             self,
             url
     ):
 
+        max_retries = 3
 
-        async with aiohttp.ClientSession(
-            timeout=self.timeout
-        ) as session:
+        for attempt in range(
+                1,
+                max_retries + 1
+        ):
 
+            try:
 
-            async with session.get(
-                url,
-                headers=self.headers
-            ) as response:
+                async with aiohttp.ClientSession(
+                        timeout=self.timeout
+                ) as session:
 
+                    async with session.get(
+                            url,
+                            headers=self.headers
+                    ) as response:
+                        print(
+                            "请求状态:",
+                            response.status
+                        )
+
+                        if response.status != 200:
+                            raise RuntimeError(
+                                f"HTTP {response.status}"
+                            )
+
+                        return await response.text()
+
+            except (
+                    aiohttp.ClientError,
+                    asyncio.TimeoutError,
+                    RuntimeError
+            ) as e:
 
                 print(
-                    "列表状态:",
-                    response.status
+                    f"请求失败，第{attempt}次尝试: "
+                    f"{url}"
                 )
 
+                print(
+                    "错误:",
+                    e
+                )
 
-                return await response.text()
+                if attempt < max_retries:
 
+                    await asyncio.sleep(
+                        2
+                    )
 
+                else:
+
+                    print(
+                        f"请求最终失败: {url}"
+                    )
+
+                    return None
 
     async def crawl(self):
-
 
         html = await self.fetch_html(
             self.url
         )
 
+        if not html:
+            print(
+                "DeepMind 页面获取失败，本次跳过。"
+            )
+
+            return []
 
         soup = BeautifulSoup(
             html,

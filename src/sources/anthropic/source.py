@@ -26,31 +26,41 @@ class AnthropicSource(BaseSource):
 
         self.name = "Anthropic"
 
-
     async def fetch(self):
 
         print(
             "\n开始获取 Anthropic 新闻..."
         )
 
-
         try:
 
             xml = await fetch_rss()
 
+            # -----------------------------------------
+            # RSS 获取失败
+            # -----------------------------------------
+
+            if not xml:
+                print(
+                    "Anthropic RSS 没有获取到数据，"
+                    "本次跳过。"
+                )
+
+                return []
+
+            # -----------------------------------------
+            # RSS 解析
+            # -----------------------------------------
 
             news_list = parse_rss(
                 xml
             )
 
-
             print(
                 f"发现 {len(news_list)} 条 Anthropic 新闻"
             )
 
-
             return news_list
-
 
         except Exception as e:
 
@@ -58,6 +68,5 @@ class AnthropicSource(BaseSource):
                 "Anthropic 获取失败:",
                 e
             )
-
 
             return []
